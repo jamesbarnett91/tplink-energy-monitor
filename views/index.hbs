@@ -52,8 +52,7 @@
 
         <div class="row">
 
-
-          <div class="col-md-5 col-sm-5 col-xs-12">
+          <div class="col-md-4 col-sm-4 col-xs-12">
             <div class="x_panel tile">
               <div class="x_title">
                 <h2>
@@ -67,14 +66,11 @@
                     <strong id="rtu-power">- kW</strong>
                   </h1>
                 </div>
-
                 <div class="row text-center">
                   <div>
                     <canvas id="rtu-gauge"></canvas>
                   </div>
                 </div>
-
-
                 <div class="row">
                   <div class="col-md-6 col-xs-6 text-center">
                     <h1>
@@ -87,11 +83,24 @@
                     </h1>
                   </div>
                 </div>
-
               </div>
-
             </div>
           </div>
+
+          <div class="col-md-8 col-sm-8 col-xs-12">
+            <div class="x_panel tile">
+              <div class="x_title">
+                <h2>
+                  <strong>Realtime Trend</strong>
+                </h2>
+                <div class="clearfix"></div>
+              </div>
+              <div class="x_content">
+                <canvas id="rtt-chart" height="270"></canvas>
+              </div>
+            </div>
+          </div>
+
         </div>
 
       </div>
@@ -117,40 +126,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/js/bootstrap.min.js"></script>
   <script src="https://bernii.github.io/gauge.js/dist/gauge.min.js"></script>
   <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.21.0/moment.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-streaming@1.4.0/dist/chartjs-plugin-streaming.min.js"></script>
 
   <script src="/javascripts/dash.js"></script>
-
-  {{!-- <script>
-
-    $(document).ready(function () {
-      var opts = {
-        angle: 0,
-        lineWidth: 0.2,
-        pointer: {
-          length: 0.6,
-          strokeWidth: 0.035,
-          color: '#000000'
-        },
-        limitMax: true,
-        limitMin: true,
-        generateGradient: true,
-        highDpiSupport: true, 
-        staticLabels: {
-          font: "12px sans-serif",
-          labels: [500, 1500, 3000]
-        },
-        staticZones: [
-          { strokeStyle: "#30B32D", min: 0, max: 500 },
-          { strokeStyle: "#FFDD00", min: 500, max: 1500 },
-          { strokeStyle: "#F03E3E", min: 1500, max: 3000 }
-        ]
-      };
-      var target = document.getElementById('realtime-gauge');
-
-      var gauge = new Gauge(target).setOptions(opts);
-      gauge.maxValue = 3000;
-      gauge.setMinValue(0);
-      gauge.animationSpeed = 1;
-      gauge.set({{ realtimeUsage.power }});
-    })
-  </script> --}}
