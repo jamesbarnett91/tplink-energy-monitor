@@ -30,14 +30,24 @@
       </div>
 
       <div class="right_col" role="main">
+        
         <div class="page-header">
-          <h1>
-            <i class="fa fa-plug"></i> {{device.alias}} {{#device.relayState}}
-            <span class="label label-success">ON</span>
-            {{/device.relayState}} {{^device.relayState}}
-            <span class="label label-danger">OFF</span>
-            {{/device.relayState}}
-          </h1>
+          <div class="row">
+            <div class="col-sm-8">
+              <h1>
+                <i class="fa fa-plug"></i> {{device.alias}} {{#device.relayState}}
+                <span class="label label-success">ON</span>
+                {{/device.relayState}} {{^device.relayState}}
+                <span class="label label-danger">OFF</span>
+                {{/device.relayState}}
+              </h1>
+            </div>
+            <div class="col-sm-4">
+              <h2 class="pull-right">
+              <input id="toggle-polling" class="form-control" type="checkbox" checked data-toggle="toggle" data-on="Auto refresh on" data-off="Auto refresh off" data-offstyle="danger">
+              </h2>
+            </div>
+          </div>
         </div>
 
         <div class="row">
@@ -54,13 +64,13 @@
               <div class="x_content">
                 <div class="row">
                   <h1 class="text-center">
-                    <strong>{{realtimeUsage.power}} kW</strong>
+                    <strong id="rtu-power">- kW</strong>
                   </h1>
                 </div>
 
                 <div class="row text-center">
                   <div>
-                    <canvas id="realtime-gauge"></canvas>
+                    <canvas id="rtu-gauge"></canvas>
                   </div>
                 </div>
 
@@ -68,12 +78,12 @@
                 <div class="row">
                   <div class="col-md-6 col-xs-6 text-center">
                     <h1>
-                      <strong>{{realtimeUsage.current}} A</strong>
+                      <strong id="rtu-current">- A</strong>
                     </h1>
                   </div>
                   <div class="col-md-6 col-xs-6 text-center">
                     <h1>
-                      <strong>{{realtimeUsage.voltage}} V</strong>
+                      <strong id="rtu-voltage">- V</strong>
                     </h1>
                   </div>
                 </div>
@@ -105,9 +115,12 @@
   <script src="https://getbootstrap.com/assets/js/vendor/popper.min.js"></script>
   <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/js/bootstrap.min.js"></script>
-  <script src="http://bernii.github.io/gauge.js/dist/gauge.min.js"></script>
+  <script src="https://bernii.github.io/gauge.js/dist/gauge.min.js"></script>
+  <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
 
-  <script>
+  <script src="/javascripts/dash.js"></script>
+
+  {{!-- <script>
 
     $(document).ready(function () {
       var opts = {
@@ -140,4 +153,4 @@
       gauge.animationSpeed = 1;
       gauge.set({{ realtimeUsage.power }});
     })
-  </script>
+  </script> --}}
