@@ -1,0 +1,143 @@
+  <div class="container body">
+    <div class="main_container">
+      <div class="col-md-3 left_col">
+        <div class="left_col scroll-view">
+          <div class="navbar nav_title" style="border: 0;">
+            <a href="index.html" class="site_title">
+              <span>Energy Monitor</span>
+            </a>
+          </div>
+
+          <div class="clearfix"></div>
+
+          <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
+            <div class="menu_section">
+              <h3>Devices</h3>
+              <ul class="nav side-menu">
+                {{#each devices}}
+                <li class="active">
+                  <a title="Device Id: {{this.deviceId}}">
+                    <i class="fa fa-plug"></i>
+                    {{this.alias}}
+                  </a>
+                </li>
+                {{/each}}
+              </ul>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="right_col" role="main">
+        <div class="page-header">
+          <h1>
+            <i class="fa fa-plug"></i> {{device.alias}} {{#device.relayState}}
+            <span class="label label-success">ON</span>
+            {{/device.relayState}} {{^device.relayState}}
+            <span class="label label-danger">OFF</span>
+            {{/device.relayState}}
+          </h1>
+        </div>
+
+        <div class="row">
+
+
+          <div class="col-md-5 col-sm-5 col-xs-12">
+            <div class="x_panel tile">
+              <div class="x_title">
+                <h2>
+                  <strong>Realtime Usage</strong>
+                </h2>
+                <div class="clearfix"></div>
+              </div>
+              <div class="x_content">
+                <div class="row">
+                  <h1 class="text-center">
+                    <strong>{{realtimeUsage.power}} kW</strong>
+                  </h1>
+                </div>
+
+                <div class="row text-center">
+                  <div>
+                    <canvas id="realtime-gauge"></canvas>
+                  </div>
+                </div>
+
+
+                <div class="row">
+                  <div class="col-md-6 col-xs-6 text-center">
+                    <h1>
+                      <strong>{{realtimeUsage.current}} A</strong>
+                    </h1>
+                  </div>
+                  <div class="col-md-6 col-xs-6 text-center">
+                    <h1>
+                      <strong>{{realtimeUsage.voltage}} V</strong>
+                    </h1>
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <footer>
+    <ul class="list-inline">
+      <li>
+        <strong>Device name:</strong> {{device.name}}</li>
+      <li>
+        <strong>Model:</strong> {{device.model}}</li>
+      <li>
+        <strong>Sw ver:</strong> {{device.softwareVersion}}</li>
+      <li>
+        <strong>Hw ver:</strong> {{device.hardwareVersion}}</li>
+    </ul>
+  </footer>
+  </div>
+  </div>
+
+  <script src="https://getbootstrap.com/assets/js/vendor/popper.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/js/bootstrap.min.js"></script>
+  <script src="http://bernii.github.io/gauge.js/dist/gauge.min.js"></script>
+
+  <script>
+
+    $(document).ready(function () {
+      var opts = {
+        angle: 0,
+        lineWidth: 0.2,
+        pointer: {
+          length: 0.6,
+          strokeWidth: 0.035,
+          color: '#000000'
+        },
+        limitMax: true,
+        limitMin: true,
+        generateGradient: true,
+        highDpiSupport: true, 
+        staticLabels: {
+          font: "12px sans-serif",
+          labels: [500, 1500, 3000]
+        },
+        staticZones: [
+          { strokeStyle: "#30B32D", min: 0, max: 500 },
+          { strokeStyle: "#FFDD00", min: 500, max: 1500 },
+          { strokeStyle: "#F03E3E", min: 1500, max: 3000 }
+        ]
+      };
+      var target = document.getElementById('realtime-gauge');
+
+      var gauge = new Gauge(target).setOptions(opts);
+      gauge.maxValue = 3000;
+      gauge.setMinValue(0);
+      gauge.animationSpeed = 1;
+      gauge.set({{ realtimeUsage.power }});
+    })
+  </script>
