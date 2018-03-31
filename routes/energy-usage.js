@@ -44,14 +44,48 @@ router.get('/:deviceId/day-stats', function(req, res, next) {
         let previousMonthStats = fillMissingDays(previousPeriodStats, previousMoment);
         let combinedStats = previousMonthStats.concat(currentMonthStats);
 
-        res.json(trimDayStatResults(combinedStats, totalDaysRequired));
+        res.json(trimStatResults(combinedStats, totalDaysRequired));
 
       });
     }
     else {
       let dayStats = fillMissingDays(currentPeriodStats, currentMoment);
   
-      res.json(trimDayStatResults(dayStats, totalDaysRequired));
+      res.json(trimStatResults(dayStats, totalDaysRequired));
+    }
+
+  });
+
+});
+
+router.get('/:deviceId/month-stats', function(req, res, next) {
+  let deviceId = req.params.deviceId;
+
+  // Get last x months
+  let totalMonthsRequired = 12; // TODO currently only works for up to 14 month (2 year) spans
+  let currentMoment = moment();
+  let previousMoment = moment().subtract(totalMonthsRequired, 'months');
+
+  deviceManager.getDevice(deviceId).emeter.getMonthStats(currentMoment.year()).then(currentPeriodStats => {
+
+    // Check if we also need the previous year to meet the required total number of samples
+    if(currentMoment.month() + 1 < totalMonthsRequired) {
+      
+      // Get previous year (assuming the totalMonthsRequired limit described above).
+      deviceManager.getDevice(deviceId).emeter.getMonthStats(previousMoment.year()).then(previousPeriodStats => {
+
+        let currentYearStats = fillMissingMonths(currentPeriodStats, currentMoment);
+        let previousYearStats = fillMissingMonths(previousPeriodStats, previousMoment);
+        let combinedStats = previousYearStats.concat(currentYearStats);
+
+        res.json(trimStatResults(combinedStats, totalMonthsRequired));
+
+      });
+    }
+    else {
+      let monthStats = fillMissingMonths(currentPeriodStats, currentMoment);
+
+      res.json(trimStatResults(monthStats, totalMonthsRequired));
     }
 
   });
@@ -84,7 +118,40 @@ function fillMissingDays(sparseDayStats, statsMoment) {
   return denseDayStats;
 }
 
-function trimDayStatResults(stats, maxSamples) {
+function fillMissingMonths(sparseMonthStats, statsMoment) {
+  let denseMonthStats = [];
+
+  let maxMonths;
+  // Dont fill months in months which havent happened yet
+  if(statsMoment.year() === moment().year()) {
+    maxMonths = moment().month();
+  }
+  else {
+    maxMonths = 12;
+  }
+
+  // Fill in any missing months up to the max amount
+  Array.from({length: maxMonths}, (x,i) => i + 1).forEach(m => {
+
+    let stat = sparseMonthStats.month_list.find(i => i.month === m);
+
+    if(stat === undefined) {
+      denseMonthStats.push({
+        year: statsMoment.year(),
+        month: m,
+        energy: 0
+      })
+    }
+    else {
+      denseMonthStats.push(stat);
+    }
+
+  });
+
+  return denseMonthStats;
+}
+
+function trimStatResults(stats, maxSamples) {
   return stats.splice(stats.length - maxSamples, stats.length);
 }
 

@@ -7,14 +7,17 @@ var dash = {
   realtimeTrendLastSample: 0,
 
   dailyUsageChart: null,
+  monthlyUsageChart: null,
 
   init: function() {
     this.initRealtimeGauge();
     this.initRealtimeTrendChart();
     this.initDailyUsageChart();
+    this.initMonthlyUsageChart();
     
     this.startPolling();
     this.getDailyUsageData();
+    this.getMonthlyUsageData();
   },
 
   initRealtimeGauge: function() {
@@ -85,6 +88,37 @@ var dash = {
   initDailyUsageChart: function() {
     var ctx = document.getElementById('du-chart').getContext('2d');
     this.dailyUsageChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        datasets: [{
+          label: "Energy (kWH)",
+          borderColor: 'rgb(255, 99, 132)',
+          backgroundColor: 'rgb(255, 99, 132)',
+          data: []
+        }]
+      },
+      options: {
+        legend: {
+          display: false
+        },
+        scales: {
+          yAxes: [{
+            ticks: {
+              beginAtZero:true
+            }
+          }]
+        },
+        maintainAspectRatio: false,
+        tooltips: {
+          intersect: false
+        },
+      }
+    });
+  },
+
+  initMonthlyUsageChart: function() {
+    var ctx = document.getElementById('mu-chart').getContext('2d');
+    this.monthlyUsageChart = new Chart(ctx, {
       type: 'bar',
       data: {
         datasets: [{
@@ -194,7 +228,33 @@ var dash = {
     });
 
     dash.dailyUsageChart.update();
-  }
+  },
+
+  getMonthlyUsageData: function() {
+    $.ajax({
+      url: "/energy-usage/1/month-stats",
+      type: "GET",
+      success: function(data) {
+        dash.parseMonthlyUsageData(data);
+      },
+      dataType: "json",
+      timeout: 4000
+    });
+  },
+
+  parseMonthlyUsageData: function(usageData) {
+    usageData.forEach(function(entry) {
+      // Months from API response are 1 based
+      var month = moment().month(entry.month -1);
+
+      dash.monthlyUsageChart.data.labels.push(month.format('MMM'));
+      dash.monthlyUsageChart.data.datasets.forEach(function(dataset) {
+        dataset.data.push(entry.energy);
+      });
+    });
+
+    dash.monthlyUsageChart.update();
+  },
 
 };
 
