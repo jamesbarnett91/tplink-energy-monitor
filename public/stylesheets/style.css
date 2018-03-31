@@ -9,3 +9,14 @@ footer ul {
 .x_panel {
   height: 350px;
 }
+
+.x_panel.small {
+  height: unset;
+}
+
+.x_content.small {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0;
+}

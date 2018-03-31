@@ -35,11 +35,7 @@
           <div class="row">
             <div class="col-sm-8">
               <h1>
-                <i class="fa fa-plug"></i> {{device.alias}} {{#device.relayState}}
-                <span class="label label-success">ON</span>
-                {{/device.relayState}} {{^device.relayState}}
-                <span class="label label-danger">OFF</span>
-                {{/device.relayState}}
+                <i class="fa fa-plug"></i> {{device.alias}}
               </h1>
             </div>
             <div class="col-sm-4">
@@ -103,6 +99,98 @@
 
         </div>
 
+        
+
+        <div class="row">
+
+          <div class="col-md-2 col-sm-2 col-xs-12">
+            <div class="x_panel small tile">
+              <div class="x_title">
+                <h2>
+                  <strong>Plug state</strong>
+                </h2>
+                <div class="clearfix"></div>
+              </div>
+              <div class="x_content small">
+                  <h1>
+                    <span id="power-state">-</span>
+                  </h1>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-2 col-sm-2 col-xs-12">
+            <div class="x_panel small tile">
+              <div class="x_title">
+                <h2>
+                  <strong>Uptime</strong>
+                </h2>
+                <div class="clearfix"></div>
+              </div>
+              <div class="x_content small">
+                <h1 id="uptime">-</h1>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-2 col-sm-2 col-xs-12">
+            <div class="x_panel small tile">
+              <div class="x_title">
+                <h2>
+                  <strong>Total today</strong>
+                </h2>
+                <div class="clearfix"></div>
+              </div>
+              <div class="x_content small">
+                <h1>- <small>kWH</small></h1>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-2 col-sm-2 col-xs-12">
+            <div class="x_panel small tile">
+              <div class="x_title">
+                <h2>
+                  <strong>Total this month</strong>
+                </h2>
+                <div class="clearfix"></div>
+              </div>
+              <div class="x_content small">
+                <h1>- <small>kWH</small></h1>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-2 col-sm-2 col-xs-12">
+            <div class="x_panel small tile">
+              <div class="x_title">
+                <h2>
+                  <strong>Daily avg</strong>
+                </h2>
+                <div class="clearfix"></div>
+              </div>
+              <div class="x_content small">
+                <h1>- <small>kWH</small></h1>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-2 col-sm-2 col-xs-12">
+            <div class="x_panel small tile">
+              <div class="x_title">
+                <h2>
+                  <strong>Monthly avg</strong>
+                </h2>
+                <div class="clearfix"></div>
+              </div>
+              <div class="x_content small">
+                <h1>- <small>kWH</small></h1>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
         <div class="row">
 
           <div class="col-md-8 col-sm-8 col-xs-12">
@@ -159,6 +247,7 @@
   <script src="https://bernii.github.io/gauge.js/dist/gauge.min.js"></script>
   <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.21.0/moment.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-duration-format/2.2.2/moment-duration-format.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-streaming@1.4.0/dist/chartjs-plugin-streaming.min.js"></script>
 

@@ -1,5 +1,6 @@
 var dash = {
-  pollRateMs: 1000,
+  realtimeUsagePollRateMs: 1000,
+  powerStatePollRateMs: 10000,
   pollingEnabled: true,
 
   realtimeGauge: null,
@@ -157,22 +158,22 @@ var dash = {
   },
 
   // TODO - should probably use websockets 
-  poll: function() {
+  pollUsage: function() {
     if(this.pollingEnabled) {
       $.ajax({
         url: "/energy-usage/1/realtime",
         type: "GET",
         success: function(data) {
-          dash.refreshDashboard(data);
+          dash.refreshRealtimeDisplay(data);
         },
         dataType: "json",
-        complete: setTimeout(function() {dash.poll()}, dash.pollRateMs),
+        complete: setTimeout(function() {dash.pollUsage()}, dash.realtimeUsagePollRateMs),
         timeout: 2000
       });
     }
   },
 
-  refreshDashboard: function(realtime) {
+  refreshRealtimeDisplay: function(realtime) {
 
     var power = Math.round(realtime.power);
     var current = realtime.current.toFixed(2);
@@ -196,7 +197,9 @@ var dash = {
       frameRate: 30,
       onRefresh: dash.realtimeTrendChartOnRefresh
     };
-    this.poll();
+    
+    this.pollUsage();
+    this.pollPowerStatus();
   },
 
   stopPolling: function() {
@@ -254,6 +257,32 @@ var dash = {
     });
 
     dash.monthlyUsageChart.update();
+  },
+
+  pollPowerStatus: function() {
+    if(this.pollingEnabled) {
+      $.ajax({
+        url: "/power-state/1",
+        type: "GET",
+        success: function(data) {
+          dash.refreshPowerState(data);
+        },
+        dataType: "json",
+        complete: setTimeout(function() {dash.pollPowerStatus()}, dash.powerStatePollRateMs),
+        timeout: 2000
+      });
+    }
+  },
+
+  refreshPowerState: function(powerState) {
+    if(powerState.isOn) {
+      $("#power-state").text("ON").attr("class", "label label-success");
+    }
+    else {
+      $("#power-state").text("OFF").attr("class", "label label-danger");
+    }
+
+    $("#uptime").text(moment.duration(powerState.uptime, "seconds").format("d [d] h [h] m [m]"));
   },
 
 };

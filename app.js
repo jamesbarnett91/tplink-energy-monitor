@@ -6,6 +6,7 @@ var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
 var energyUsageRouter = require('./routes/energy-usage');
+var powerStateRouter = require('./routes/power-state');
 
 var app = express();
 
@@ -21,6 +22,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/energy-usage', energyUsageRouter);
+app.use('/power-state', powerStateRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
