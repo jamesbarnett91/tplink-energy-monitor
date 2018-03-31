@@ -6,10 +6,15 @@ var dash = {
   realtimeTrendChart: null,
   realtimeTrendLastSample: 0,
 
+  dailyUsageChart: null,
+
   init: function() {
     this.initRealtimeGauge();
     this.initRealtimeTrendChart();
+    this.initDailyUsageChart();
+    
     this.startPolling();
+    this.getDailyUsageData();
   },
 
   initRealtimeGauge: function() {
@@ -77,6 +82,37 @@ var dash = {
     });
   },
 
+  initDailyUsageChart: function() {
+    var ctx = document.getElementById('du-chart').getContext('2d');
+    this.dailyUsageChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        datasets: [{
+          label: "Energy (kWH)",
+          borderColor: 'rgb(255, 99, 132)',
+          backgroundColor: 'rgb(255, 99, 132)',
+          data: []
+        }]
+      },
+      options: {
+        legend: {
+          display: false
+        },
+        scales: {
+          yAxes: [{
+            ticks: {
+              beginAtZero:true
+            }
+          }]
+        },
+        maintainAspectRatio: false,
+        tooltips: {
+          intersect: false
+        },
+      }
+    });
+  },
+
   realtimeTrendChartOnRefresh: function(chart) {
     chart.data.datasets.forEach(function(dataset) {
       dataset.data.push({
@@ -110,7 +146,7 @@ var dash = {
 
     this.realtimeGauge.set(power);
     // might switch to Vue.js if this gets tedious 
-    $("#rtu-power").text(power + " kW")
+    $("#rtu-power").text(power + " W")
     $("#rtu-current").text(current + " A")
     $("#rtu-voltage").text(voltage + " V")
 
@@ -134,7 +170,33 @@ var dash = {
     this.realtimeTrendChart.options.plugins.streaming = false;
   },
 
-}
+  getDailyUsageData: function() {
+    $.ajax({
+      url: "/energy-usage/1/day-stats",
+      type: "GET",
+      success: function(data) {
+        dash.parseDailyUsageData(data);
+      },
+      dataType: "json",
+      timeout: 4000
+    });
+  },
+
+  parseDailyUsageData: function(usageData) {
+    usageData.forEach(function(entry) {
+      // Months from API response are 1 based
+      var day = moment([entry.year, entry.month - 1, entry.day]);
+
+      dash.dailyUsageChart.data.labels.push(day.format('MMM D'));
+      dash.dailyUsageChart.data.datasets.forEach(function(dataset) {
+        dataset.data.push(entry.energy);
+      });
+    });
+
+    dash.dailyUsageChart.update();
+  }
+
+};
 
 
 $(document).ready(function () {

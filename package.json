@@ -17,6 +17,7 @@
     "hbs": "~4.0.1",
     "http-errors": "~1.6.2",
     "morgan": "~1.9.0",
-    "tplink-smarthome-api": "0.22.0"
+    "tplink-smarthome-api": "0.22.0",
+    "moment": "2.22.0"
   }
 }
