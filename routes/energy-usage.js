@@ -95,8 +95,16 @@ router.get('/:deviceId/month-stats', function(req, res, next) {
 function fillMissingDays(sparseDayStats, statsMoment) {
   let denseDayStats = [];
 
-  // Fill in any missing days
-  let totalDays = statsMoment.date();
+  let totalDays;
+  // If these stats are for the current month, fill up to the current day of the month
+  // Otherwise fill the whole month
+  if(moment().month() === statsMoment.month()) {
+    totalDays = statsMoment.date();
+  }
+  else {
+    totalDays = statsMoment.daysInMonth();
+  }
+
   Array.from({length: totalDays}, (x,i) => i + 1).forEach(d => {
 
     let stat = sparseDayStats.day_list.find(i => i.day === d);
