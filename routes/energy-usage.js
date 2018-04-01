@@ -130,9 +130,9 @@ function fillMissingMonths(sparseMonthStats, statsMoment) {
   let denseMonthStats = [];
 
   let maxMonths;
-  // Dont fill months in months which havent happened yet
+  // Dont fill in months which exist in the future
   if(statsMoment.year() === moment().year()) {
-    maxMonths = moment().month();
+    maxMonths = moment().month() + 1; // API months are 1 based
   }
   else {
     maxMonths = 12;

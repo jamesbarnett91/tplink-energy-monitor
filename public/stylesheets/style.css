@@ -20,3 +20,9 @@ footer ul {
   justify-content: center;
   margin-top: 0;
 }
+
+.btn-success {
+  color: #fff;
+  background-color: #5cb85c;
+  border-color: #4cae4c;
+}

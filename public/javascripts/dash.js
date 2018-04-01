@@ -1,6 +1,7 @@
 var dash = {
   realtimeUsagePollRateMs: 1000,
-  powerStatePollRateMs: 10000,
+  powerStatePollRateMs: 60000,
+  historicalStatsPollRateMs: 300000,
   pollingEnabled: true,
 
   realtimeGauge: null,
@@ -17,8 +18,6 @@ var dash = {
     this.initMonthlyUsageChart();
     
     this.startPolling();
-    this.getDailyUsageData();
-    this.getMonthlyUsageData();
   },
 
   initRealtimeGauge: function() {
@@ -200,6 +199,8 @@ var dash = {
     
     this.pollUsage();
     this.pollPowerStatus();
+    this.pollDayStats();
+    this.pollMonthStats();
   },
 
   stopPolling: function() {
@@ -207,19 +208,29 @@ var dash = {
     this.realtimeTrendChart.options.plugins.streaming = false;
   },
 
-  getDailyUsageData: function() {
-    $.ajax({
-      url: "/energy-usage/1/day-stats",
-      type: "GET",
-      success: function(data) {
-        dash.parseDailyUsageData(data);
-      },
-      dataType: "json",
-      timeout: 4000
-    });
+  pollDayStats: function() {
+    if(this.pollingEnabled) {
+      $.ajax({
+        url: "/energy-usage/1/day-stats",
+        type: "GET",
+        success: function(data) {
+          dash.parseDailyUsageData(data);
+        },
+        dataType: "json",
+        complete: setTimeout(function() {dash.pollDayStats()}, dash.historicalStatsPollRateMs),
+        timeout: 4000
+      });
+    }
   },
 
   parseDailyUsageData: function(usageData) {
+
+    // Clear previous data
+    dash.dailyUsageChart.data.labels = [];
+    dash.dailyUsageChart.data.datasets.forEach(function(dataset) {
+      dataset.data = [];
+    });
+
     usageData.forEach(function(entry) {
       // Months from API response are 1 based
       var day = moment([entry.year, entry.month - 1, entry.day]);
@@ -231,21 +242,47 @@ var dash = {
     });
 
     dash.dailyUsageChart.update();
+    dash.setDailyUsageStats(usageData);
   },
 
-  getMonthlyUsageData: function() {
-    $.ajax({
-      url: "/energy-usage/1/month-stats",
-      type: "GET",
-      success: function(data) {
-        dash.parseMonthlyUsageData(data);
-      },
-      dataType: "json",
-      timeout: 4000
+  setDailyUsageStats: function(usageData) {
+
+    var dailyTotal = usageData.find(function(d) {
+      return d.day === moment().date() && d.month === (moment().month()+1) && d.year === moment().year()
     });
+
+    $("#total-day").text(dailyTotal.energy.toFixed(2));
+
+    var total = usageData.reduce(function(t, d) {return t + d.energy}, 0);
+    var avg = total/usageData.length;
+
+    $("#avg-day").text(avg.toFixed(2));
+
+  },
+
+  pollMonthStats: function() {
+    if(this.pollingEnabled) {
+      $.ajax({
+        url: "/energy-usage/1/month-stats",
+        type: "GET",
+        success: function(data) {
+          dash.parseMonthlyUsageData(data);
+        },
+        dataType: "json",
+        complete: setTimeout(function() {dash.pollMonthStats()}, dash.historicalStatsPollRateMs),
+        timeout: 4000
+      });
+    }
   },
 
   parseMonthlyUsageData: function(usageData) {
+    
+    // Clear previous data
+    dash.monthlyUsageChart.data.labels = [];
+    dash.monthlyUsageChart.data.datasets.forEach(function(dataset) {
+      dataset.data = [];
+    });
+
     usageData.forEach(function(entry) {
       // Months from API response are 1 based
       var month = moment().month(entry.month -1);
@@ -257,6 +294,21 @@ var dash = {
     });
 
     dash.monthlyUsageChart.update();
+    dash.setMonthlyUsageStats(usageData);
+  },
+
+  setMonthlyUsageStats: function(usageData) {
+
+    var monthlyTotal = usageData.find(function(m) {
+      return m.month === (moment().month()+1) && m.year === moment().year()
+    });
+
+    $("#total-month").text(monthlyTotal.energy.toFixed(2));
+
+    var total = usageData.reduce(function(t, m) {return t + m.energy}, 0);
+    var avg = total/usageData.length;
+
+    $("#avg-month").text(avg.toFixed(2));
   },
 
   pollPowerStatus: function() {
