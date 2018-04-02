@@ -334,7 +334,7 @@ var dash = {
       $("#power-state").text("OFF").attr("class", "label label-danger");
     }
 
-    $("#uptime").text(moment.duration(powerState.uptime, "seconds").format("d [d] h [h] m [m]"));
+    $("#uptime").text(moment.duration(powerState.uptime, "seconds").format("d[d] h[h] m[m]"));
   },
 
 };
