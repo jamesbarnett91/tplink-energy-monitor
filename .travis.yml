@@ -13,3 +13,13 @@ script:
 branches:
   only:
   - master
+
+deploy:
+  provider: releases
+  api_key:
+    secure: "Un4XrV5DDJ9LPVYhILWcfiN60UDGQaqZ8WNHUqt9iAOcvXk/bxJZlYQpwgLv588g1om/SDcbNjljGWnruWi+QYrZmvtrkQ06oMn25FXvi4EbrxFiVZEjStpDAld2GkWT+WeftDo6sQvIBl0lEb0xZ2bRSkbPYCwW5ku2ITXTk0W+237GY7OjvyLpmvmMYfSeZpoyyfAQxNEZK6fYUMf/lA/L7nHEw2NdyfXZrUvtESRNkljVc0btaDASEntuMLpCsMZRPXsJIjTCCsW83r183jOv8ZD4S4q66eI64fdF6dq6G8l1pDAXCQFJRU1RAkX5NES+BD/8FfX5yyrOF7H3S5+t6866GWEshz+5hyvsK7TLkQsI0J9stXF470sB4DUF90dg5wZSrfSHNEYC+GQ3NbTSp7lmOtKo97YftVyq746MDSHfeDMiNyxUb+JzCqxQ3iB3/c0yLWlOk63uNMyDu2SEPEta4dIKqGC8J/1jvYM4LfNnRIhtirusQluETuu+LH+TfFtcq++RK5HRcGgpzTmexMYmhTebuDosoRCqonNZiCH/APMHbSf80ShobdNN1BO9Mz+geApf479W3UeUvD5CJXJtHlEm/NwPyq3kqmyjOX9DcqAxg652+MMe3fI6d0a2KAh0hlQObEVMjYD8hoLTA1BIqgJmEGl1/0s7fno="
+  file_glob: true
+  file: dist/*
+  skip_cleanup: true
+  on:
+    tags: true
