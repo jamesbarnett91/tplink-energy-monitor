@@ -10,10 +10,6 @@ install:
 script:
   - npm run dist
 
-branches:
-  only:
-  - master
-
 deploy:
   provider: releases
   api_key:
