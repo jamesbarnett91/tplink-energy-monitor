@@ -15,8 +15,8 @@
               <h3>Devices</h3>
               <ul class="nav side-menu">
                 {{#each devices}}
-                <li class="active">
-                  <a title="Device Id: {{this.deviceId}}">
+                <li id="{{this.deviceId}}">
+                  <a title="Device Id: {{this.deviceId}}" href="/{{this.deviceId}}">
                     <i class="fa fa-plug"></i>
                     {{this.alias}}
                   </a>
@@ -242,3 +242,8 @@
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-streaming@1.4.0/dist/chartjs-plugin-streaming.min.js"></script>
 
   <script src="/javascripts/dash.js"></script>
+  <script>
+    $(document).ready(function () {
+      dash.init( '{{device.deviceId}}' );
+    });
+  </script>

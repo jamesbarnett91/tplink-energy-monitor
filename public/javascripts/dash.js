@@ -1,4 +1,6 @@
 var dash = {
+  deviceId: null,
+
   realtimeGauge: null,
   realtimeTrendChart: null,
   realtimeTrendLastSample: 0,
@@ -6,7 +8,11 @@ var dash = {
   dailyUsageChart: null,
   monthlyUsageChart: null,
 
-  init: function() {
+  init: function(deviceId) {
+    this.deviceId = deviceId;
+
+    $('#' + deviceId).addClass('active');
+
     this.initRealtimeGauge();
     this.initRealtimeTrendChart();
     this.initDailyUsageChart();
@@ -16,29 +22,35 @@ var dash = {
   },
 
   initWsConnection: function() {
-    var ws = new WebSocket('ws://192.168.1.8:3000/ws');
+    var wsUri = 'ws://' + window.location.host + '/ws'
+    var ws = new WebSocket(wsUri);
     ws.onopen = function () {
       console.log('Websocket connection established');
-      ws.send('getCachedData');
+      ws.send(JSON.stringify(
+        {
+          requestType: 'getCachedData',
+          deviceId: dash.deviceId
+        }
+      ));
     }
     ws.onmessage = this.wsMessageHandler;
   },
 
   wsMessageHandler: function(messageEvent) {
     let message = JSON.parse(messageEvent.data);
-    console.log(message);
-
-    if(message.dataType === 'realtimeUsage') {
-      dash.refreshRealtimeDisplay(message.data);
-    }
-    else if(message.dataType === 'dailyUsage') {
-      dash.parseDailyUsageData(message.data);
-    }
-    else if(message.dataType === 'monthlyUsage') {
-      dash.parseMonthlyUsageData(message.data);
-    }
-    else if(message.dataType === 'powerState') {
-      dash.refreshPowerState(message.data);
+    if(message.deviceId === dash.deviceId) {
+      if(message.dataType === 'realtimeUsage') {
+        dash.refreshRealtimeDisplay(message.data);
+      }
+      else if(message.dataType === 'dailyUsage') {
+        dash.parseDailyUsageData(message.data);
+      }
+      else if(message.dataType === 'monthlyUsage') {
+        dash.parseMonthlyUsageData(message.data);
+      }
+      else if(message.dataType === 'powerState') {
+        dash.refreshPowerState(message.data);
+      }
     }
 
   },
@@ -289,10 +301,3 @@ var dash = {
   },
 
 };
-
-
-$(document).ready(function () {
-
-  dash.init();
-
-});

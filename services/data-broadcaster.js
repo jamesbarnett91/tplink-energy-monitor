@@ -1,19 +1,19 @@
 const app = require('../app');
 
-function broadcastRealtimeUsageUpdate(data) {
-  broadcast(generatePayload('realtimeUsage', data));
+function broadcastRealtimeUsageUpdate(deviceId, data) {
+  broadcast(generatePayload('realtimeUsage', deviceId, data));
 }
 
-function broadcastDailyUsageUpdate(data) {
-  broadcast(generatePayload('dailyUsage', data));
+function broadcastDailyUsageUpdate(deviceId, data) {
+  broadcast(generatePayload('dailyUsage', deviceId, data));
 }
 
-function broadcastMonthlyUsageUpdate(data) {
-  broadcast(generatePayload('monthlyUsage', data));
+function broadcastMonthlyUsageUpdate(deviceId, data) {
+  broadcast(generatePayload('monthlyUsage', deviceId, data));
 }
 
-function broadcastPowerStateUpdate(data) {
-  broadcast(generatePayload('powersState', data));
+function broadcastPowerStateUpdate(deviceId, data) {
+  broadcast(generatePayload('powersState', deviceId, data));
 }
 
 function broadcast(payload) {
@@ -22,10 +22,11 @@ function broadcast(payload) {
   })
 }
 
-function generatePayload(dataType, data) {
+function generatePayload(dataType, deviceId, data) {
 
   let payload = {
     dataType: dataType,
+    deviceId: deviceId,
     data: data
   }
 

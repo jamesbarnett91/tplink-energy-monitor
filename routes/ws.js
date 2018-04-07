@@ -9,14 +9,17 @@ router.ws('/', function(ws, req) {
 
   ws.on('message', msg => {
 
-    // Latest data is always pushed out to clients, but clients can also request cached data at any time.
-    if(msg === 'getCachedData') {
-      let cachedData = dataFetcher.getCachedData();
+    let message = JSON.parse(msg);
 
-      ws.send(dataBroadcaster.generatePayload('realtimeUsage', cachedData.realtimeUsage));
-      ws.send(dataBroadcaster.generatePayload('dailyUsage', cachedData.dailyUsage));
-      ws.send(dataBroadcaster.generatePayload('monthlyUsage', cachedData.monthlyUsage));
-      ws.send(dataBroadcaster.generatePayload('powerState', cachedData.powerState));
+    // Latest data is always pushed out to clients, but clients can also request cached data at any time.
+    if(message.requestType === 'getCachedData') {
+      let deviceId = message.deviceId;
+      let cachedData = dataFetcher.getCachedData(deviceId);
+
+      ws.send(dataBroadcaster.generatePayload('realtimeUsage', deviceId, cachedData.realtimeUsage));
+      ws.send(dataBroadcaster.generatePayload('dailyUsage', deviceId, cachedData.dailyUsage));
+      ws.send(dataBroadcaster.generatePayload('monthlyUsage', deviceId, cachedData.monthlyUsage));
+      ws.send(dataBroadcaster.generatePayload('powerState', deviceId, cachedData.powerState));
     }
   });
 
