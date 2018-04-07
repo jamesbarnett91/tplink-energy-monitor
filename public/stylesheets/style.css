@@ -26,3 +26,9 @@ footer ul {
   background-color: #5cb85c;
   border-color: #4cae4c;
 }
+
+.alert-danger {
+  color: #a94442;
+  background-color: #f2dede;
+  border-color: #ebccd1;
+}

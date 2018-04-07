@@ -33,9 +33,14 @@
         
         <div class="page-header">
           <div class="row">
-            <h1>
-              <i class="fa fa-plug"></i> {{device.alias}}
-            </h1>
+            <div class="col-sm-8">
+              <h1>
+                <i class="fa fa-plug"></i> {{device.alias}}
+              </h1>
+            </div>
+            <div class="col-sm-4">
+              <div id="connection-error" class="alert alert-danger" style="display:none">Connection lost. Attempting to re-establish...</div>
+            </div>
           </div>
         </div>
 

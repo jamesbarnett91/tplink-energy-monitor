@@ -26,6 +26,7 @@ var dash = {
     var ws = new WebSocket(wsUri);
     ws.onopen = function () {
       console.log('Websocket connection established');
+      $('#connection-error').hide(200);
       ws.send(JSON.stringify(
         {
           requestType: 'getCachedData',
@@ -33,7 +34,14 @@ var dash = {
         }
       ));
     }
-    ws.onmessage = this.wsMessageHandler;
+    ws.onmessage = dash.wsMessageHandler;
+
+    ws.onclose = function() {
+      // Usually caused by mobile devices going to sleep or the user minimising the browser app.
+      // The setTimeout will begin once the device wakes from sleep or the browser regains focus.
+      $('#connection-error').show();
+      setTimeout(dash.initWsConnection, 2000);
+    }
   },
 
   wsMessageHandler: function(messageEvent) {
