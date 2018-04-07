@@ -1,14 +1,14 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+const createError = require('http-errors');
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
 
-var indexRouter = require('./routes/index');
-var energyUsageRouter = require('./routes/energy-usage');
-var powerStateRouter = require('./routes/power-state');
+const app = express();
+const expressWs =  require('express-ws')(app);
 
-var app = express();
+const indexRouter = require('./routes/index');
+const wsRouter = require('./routes/ws');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -21,8 +21,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
-app.use('/energy-usage', energyUsageRouter);
-app.use('/power-state', powerStateRouter);
+app.use('/ws', wsRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -40,4 +39,12 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-module.exports = app;
+app.listen(process.env.PORT || '3000');
+
+module.exports.getWsClientCount = function() {
+  return expressWs.getWss().clients.size;
+};
+
+module.exports.getWsClients = function() {
+  return expressWs.getWss().clients;
+};

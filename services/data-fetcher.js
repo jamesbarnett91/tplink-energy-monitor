@@ -1,30 +1,48 @@
-const express = require('express');
-const router = express.Router();
-
-const deviceManager = require('../services/device-manager');
+const deviceManager = require('./device-manager');
+const dataBroadcaster = require('./data-broadcaster');
+const app = require('../app');
 const moment = require('moment');
 
-router.get('/:deviceId/realtime', function(req, res, next) {
+// Get initial data after a short delay to allow the device manager to find devices
+// TODO run once device manager notifies its complete instead
+setTimeout(function() {
+  fetchRealtimeUsage();
+  fetchDailyUsage();
+  fetchMonthlyUsage();
+  fetchPowerState();
+}, 5000)
 
-  let deviceId = req.params.deviceId;
+let cachedRealtimeUsageData = {};
+let cachedDailyUsageData = {};
+let cachedMonthlyUsageData = {};
+let cachedPowerState = {};
 
-  let realtimeUsage = {};
-  // TODO - cache results with a short TTL so we don't hammer the plug if multiple clients are requesting data
-  deviceManager.getDevice(deviceId).emeter.getRealtime().then(response => {
+function fetchRealtimeUsage() {
 
-    // Voltage seems to be reported as its peak to peak value, not RMS.
-    // Show the RMS value since thats what would you expect to see.
-    // i.e. 220v not 310v (in the U.K)
-    response.voltage = response.voltage / Math.sqrt(2);
+  let deviceId = 1; // TODO
 
-    res.json(response);
-  });
+  console.log('connected clients', app.getWsClientCount());
+  if(app.getWsClientCount() > 0) {
+    deviceManager.getDevice(deviceId).emeter.getRealtime().then(response => {
 
-});
+      // Voltage seems to be reported as its peak to peak value, not RMS.
+      // Show the RMS value since thats what would you expect to see.
+      // i.e. 220v not 310v (in the U.K)
+      response.voltage = response.voltage / Math.sqrt(2);
 
-router.get('/:deviceId/day-stats', function(req, res, next) {
+      cachedRealtimeUsageData = response;
   
-  let deviceId = req.params.deviceId;
+      dataBroadcaster.broadcastRealtimeUsageUpdate(response);
+  
+    });
+  }
+
+  setTimeout(fetchRealtimeUsage, 1000);
+}
+
+function fetchDailyUsage() {
+
+  let deviceId = 1;
 
   // Get last x days
   let totalDaysRequired = 30; // TODO currently only works for up to 2 months spans
@@ -44,22 +62,31 @@ router.get('/:deviceId/day-stats', function(req, res, next) {
         let previousMonthStats = fillMissingDays(previousPeriodStats, previousMoment);
         let combinedStats = previousMonthStats.concat(currentMonthStats);
 
-        res.json(trimStatResults(combinedStats, totalDaysRequired));
+        let result = trimStatResults(combinedStats, totalDaysRequired);
+
+        cachedDailyUsageData = result;
+
+        dataBroadcaster.broadcastDailyUsageUpdate(result);
 
       });
     }
     else {
       let dayStats = fillMissingDays(currentPeriodStats, currentMoment);
   
-      res.json(trimStatResults(dayStats, totalDaysRequired));
+      let result = trimStatResults(dayStats, totalDaysRequired);
+      cachedDailyUsageData = result;
+
+      dataBroadcaster.broadcastDailyUsageUpdate(result);
     }
 
   });
 
-});
+  setTimeout(fetchDailyUsage, 300000); // 5 mins;
+}
 
-router.get('/:deviceId/month-stats', function(req, res, next) {
-  let deviceId = req.params.deviceId;
+function fetchMonthlyUsage() {
+
+  let deviceId = 1;
 
   // Get last x months
   let totalMonthsRequired = 12; // TODO currently only works for up to 14 month (2 year) spans
@@ -78,19 +105,47 @@ router.get('/:deviceId/month-stats', function(req, res, next) {
         let previousYearStats = fillMissingMonths(previousPeriodStats, previousMoment);
         let combinedStats = previousYearStats.concat(currentYearStats);
 
-        res.json(trimStatResults(combinedStats, totalMonthsRequired));
+        let result = trimStatResults(combinedStats, totalMonthsRequired);
+
+        cachedMonthlyUsageData = result;
+
+        dataBroadcaster.broadcastMonthlyUsageUpdate(result);
 
       });
     }
     else {
       let monthStats = fillMissingMonths(currentPeriodStats, currentMoment);
 
-      res.json(trimStatResults(monthStats, totalMonthsRequired));
+      let result = trimStatResults(monthStats, totalMonthsRequired);
+
+      cachedMonthlyUsageData = result;
+
+      dataBroadcaster.broadcastMonthlyUsageUpdate(result);
     }
 
   });
 
-});
+  setTimeout(fetchMonthlyUsage, 1800000);  // 30 mins
+}
+
+function fetchPowerState() {
+
+  let deviceId = 1
+
+  deviceManager.getDevice(deviceId).getSysInfo().then(response => {
+
+    let powerState = {
+      isOn: (response.relay_state === 1),
+      uptime: response.on_time
+    };
+
+    cachedPowerState = powerState;
+    dataBroadcaster.broadcastPowerStateUpdate(powerState);
+  });
+
+  setTimeout(fetchPowerState, 60000);
+}
+
 
 function fillMissingDays(sparseDayStats, statsMoment) {
   let denseDayStats = [];
@@ -163,4 +218,11 @@ function trimStatResults(stats, maxSamples) {
   return stats.splice(stats.length - maxSamples, stats.length);
 }
 
-module.exports = router;
+module.exports.getCachedData = function() {
+  return {
+    realtimeUsage: cachedRealtimeUsageData,
+    dailyUsage: cachedDailyUsageData,
+    monthlyUsage: cachedMonthlyUsageData,
+    powerState: cachedPowerState
+  }
+}

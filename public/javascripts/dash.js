@@ -1,9 +1,4 @@
 var dash = {
-  realtimeUsagePollRateMs: 1000,
-  powerStatePollRateMs: 60000,
-  historicalStatsPollRateMs: 300000,
-  pollingEnabled: true,
-
   realtimeGauge: null,
   realtimeTrendChart: null,
   realtimeTrendLastSample: 0,
@@ -17,7 +12,35 @@ var dash = {
     this.initDailyUsageChart();
     this.initMonthlyUsageChart();
     
-    this.startPolling();
+    this.initWsConnection();
+  },
+
+  initWsConnection: function() {
+    var ws = new WebSocket('ws://192.168.1.8:3000/ws');
+    ws.onopen = function () {
+      console.log('Websocket connection established');
+      ws.send('getCachedData');
+    }
+    ws.onmessage = this.wsMessageHandler;
+  },
+
+  wsMessageHandler: function(messageEvent) {
+    let message = JSON.parse(messageEvent.data);
+    console.log(message);
+
+    if(message.dataType === 'realtimeUsage') {
+      dash.refreshRealtimeDisplay(message.data);
+    }
+    else if(message.dataType === 'dailyUsage') {
+      dash.parseDailyUsageData(message.data);
+    }
+    else if(message.dataType === 'monthlyUsage') {
+      dash.parseMonthlyUsageData(message.data);
+    }
+    else if(message.dataType === 'powerState') {
+      dash.refreshPowerState(message.data);
+    }
+
   },
 
   initRealtimeGauge: function() {
@@ -81,6 +104,15 @@ var dash = {
         tooltips: {
           intersect: false
         },
+        plugins: {
+          streaming: {
+            duration: 60000,
+            refresh: 1000,
+            delay: 1000,
+            frameRate: 30,
+            onRefresh: dash.realtimeTrendChartOnRefresh
+          }
+        }
       }
     });
   },
@@ -156,22 +188,6 @@ var dash = {
     });
   },
 
-  // TODO - should probably use websockets 
-  pollUsage: function() {
-    if(this.pollingEnabled) {
-      $.ajax({
-        url: "/energy-usage/1/realtime",
-        type: "GET",
-        success: function(data) {
-          dash.refreshRealtimeDisplay(data);
-        },
-        dataType: "json",
-        complete: setTimeout(function() {dash.pollUsage()}, dash.realtimeUsagePollRateMs),
-        timeout: 2000
-      });
-    }
-  },
-
   refreshRealtimeDisplay: function(realtime) {
 
     var power = Math.round(realtime.power);
@@ -187,41 +203,6 @@ var dash = {
     this.realtimeTrendLastSample = power;
   },
 
-  startPolling: function() {
-    this.pollingEnabled = true;
-    this.realtimeTrendChart.options.plugins.streaming = {
-      duration: 60000,
-      refresh: 1000,
-      delay: 1000,
-      frameRate: 30,
-      onRefresh: dash.realtimeTrendChartOnRefresh
-    };
-    
-    this.pollUsage();
-    this.pollPowerStatus();
-    this.pollDayStats();
-    this.pollMonthStats();
-  },
-
-  stopPolling: function() {
-    this.pollingEnabled = false;
-    this.realtimeTrendChart.options.plugins.streaming = false;
-  },
-
-  pollDayStats: function() {
-    if(this.pollingEnabled) {
-      $.ajax({
-        url: "/energy-usage/1/day-stats",
-        type: "GET",
-        success: function(data) {
-          dash.parseDailyUsageData(data);
-        },
-        dataType: "json",
-        complete: setTimeout(function() {dash.pollDayStats()}, dash.historicalStatsPollRateMs),
-        timeout: 4000
-      });
-    }
-  },
 
   parseDailyUsageData: function(usageData) {
 
@@ -260,21 +241,6 @@ var dash = {
 
   },
 
-  pollMonthStats: function() {
-    if(this.pollingEnabled) {
-      $.ajax({
-        url: "/energy-usage/1/month-stats",
-        type: "GET",
-        success: function(data) {
-          dash.parseMonthlyUsageData(data);
-        },
-        dataType: "json",
-        complete: setTimeout(function() {dash.pollMonthStats()}, dash.historicalStatsPollRateMs),
-        timeout: 4000
-      });
-    }
-  },
-
   parseMonthlyUsageData: function(usageData) {
     
     // Clear previous data
@@ -311,21 +277,6 @@ var dash = {
     $("#avg-month").text(avg.toFixed(2));
   },
 
-  pollPowerStatus: function() {
-    if(this.pollingEnabled) {
-      $.ajax({
-        url: "/power-state/1",
-        type: "GET",
-        success: function(data) {
-          dash.refreshPowerState(data);
-        },
-        dataType: "json",
-        complete: setTimeout(function() {dash.pollPowerStatus()}, dash.powerStatePollRateMs),
-        timeout: 2000
-      });
-    }
-  },
-
   refreshPowerState: function(powerState) {
     if(powerState.isOn) {
       $("#power-state").text("ON").attr("class", "label label-success");
@@ -343,14 +294,5 @@ var dash = {
 $(document).ready(function () {
 
   dash.init();
-
-  $("#toggle-polling").change(function() {
-    if(this.checked) {
-      dash.startPolling();
-    }
-    else {
-      dash.stopPolling();
-    }
-  });
 
 });

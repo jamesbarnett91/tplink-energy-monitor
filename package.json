@@ -8,7 +8,7 @@
     "name": "James Barnett"
   },
   "scripts": {
-    "start": "node ./bin/www",
+    "start": "node ./app.js",
     "dist": "pkg . --out-path ./dist"
   },
   "dependencies": {
@@ -25,7 +25,7 @@
     "pkg": "4.3.1"
   },
   "bin" : {
-    "tplink-monitor": "./bin/www"
+    "tplink-monitor": "./app.js"
   },
   "pkg": {
     "scripts": "node_modules/hbs/lib/hbs.js",
