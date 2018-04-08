@@ -15,8 +15,8 @@
               <h3>Devices</h3>
               <ul class="nav side-menu">
                 {{#each devices}}
-                <li class="active">
-                  <a title="Device Id: {{this.deviceId}}">
+                <li class="{{this.deviceId}}">
+                  <a title="Device Id: {{this.deviceId}}" href="/{{this.deviceId}}">
                     <i class="fa fa-plug"></i>
                     {{this.alias}}
                   </a>
@@ -34,14 +34,24 @@
         <div class="page-header">
           <div class="row">
             <div class="col-sm-8">
+              <div class="device-list-small">
+                <ul class="list-inline">
+                {{#each devices}}
+                <li class="{{this.deviceId}}">
+                  <a title="Device Id: {{this.deviceId}}" href="/{{this.deviceId}}">
+                    <i class="fa fa-plug"></i>
+                    {{this.alias}}
+                  </a>
+                </li>
+                {{/each}}
+              </ul>
+              </div>
               <h1>
                 <i class="fa fa-plug"></i> {{device.alias}}
               </h1>
             </div>
             <div class="col-sm-4">
-              <h2 class="pull-right">
-              <input id="toggle-polling" class="form-control" type="checkbox" checked data-toggle="toggle" data-on="Auto refresh on" data-off="Auto refresh off" data-onstyle="success" data-offstyle="danger">
-              </h2>
+              <div id="connection-error" class="alert alert-danger" style="display:none">Connection lost. Attempting to re-establish...</div>
             </div>
           </div>
         </div>
@@ -101,7 +111,7 @@
 
         <div class="row">
 
-          <div class="col-md-2 col-sm-2 col-xs-12">
+          <div class="col-md-4 col-sm-4 col-xs-12 col-lg-4 col-xl-2">
             <div class="x_panel small tile">
               <div class="x_title">
                 <h2>
@@ -117,7 +127,7 @@
             </div>
           </div>
 
-          <div class="col-md-2 col-sm-2 col-xs-12">
+          <div class="col-md-4 col-sm-4 col-xs-12 col-lg-4 col-xl-2">
             <div class="x_panel small tile">
               <div class="x_title">
                 <h2>
@@ -131,7 +141,7 @@
             </div>
           </div>
 
-          <div class="col-md-2 col-sm-2 col-xs-12">
+          <div class="col-md-4 col-sm-4 col-xs-12 col-lg-4 col-xl-2">
             <div class="x_panel small tile">
               <div class="x_title">
                 <h2>
@@ -145,7 +155,7 @@
             </div>
           </div>
 
-          <div class="col-md-2 col-sm-2 col-xs-12">
+          <div class="col-md-4 col-sm-4 col-xs-12 col-lg-4 col-xl-2">
             <div class="x_panel small tile">
               <div class="x_title">
                 <h2>
@@ -159,7 +169,7 @@
             </div>
           </div>
 
-          <div class="col-md-2 col-sm-2 col-xs-12">
+          <div class="col-md-4 col-sm-4 col-xs-12 col-lg-4 col-xl-2">
             <div class="x_panel small tile">
               <div class="x_title">
                 <h2>
@@ -173,7 +183,7 @@
             </div>
           </div>
 
-          <div class="col-md-2 col-sm-2 col-xs-12">
+          <div class="col-md-4 col-sm-4 col-xs-12 col-lg-4 col-xl-2">
             <div class="x_panel small tile">
               <div class="x_title">
                 <h2>
@@ -243,10 +253,14 @@
   <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/js/bootstrap.min.js"></script>
   <script src="https://bernii.github.io/gauge.js/dist/gauge.min.js"></script>
-  <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.21.0/moment.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-duration-format/2.2.2/moment-duration-format.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-streaming@1.4.0/dist/chartjs-plugin-streaming.min.js"></script>
 
   <script src="/javascripts/dash.js"></script>
+  <script>
+    $(document).ready(function () {
+      dash.init( '{{device.deviceId}}' );
+    });
+  </script>
