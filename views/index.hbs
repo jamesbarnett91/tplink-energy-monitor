@@ -15,7 +15,7 @@
               <h3>Devices</h3>
               <ul class="nav side-menu">
                 {{#each devices}}
-                <li id="{{this.deviceId}}">
+                <li class="{{this.deviceId}}">
                   <a title="Device Id: {{this.deviceId}}" href="/{{this.deviceId}}">
                     <i class="fa fa-plug"></i>
                     {{this.alias}}
@@ -34,6 +34,18 @@
         <div class="page-header">
           <div class="row">
             <div class="col-sm-8">
+              <div class="device-list-small">
+                <ul class="list-inline">
+                {{#each devices}}
+                <li class="{{this.deviceId}}">
+                  <a title="Device Id: {{this.deviceId}}" href="/{{this.deviceId}}">
+                    <i class="fa fa-plug"></i>
+                    {{this.alias}}
+                  </a>
+                </li>
+                {{/each}}
+              </ul>
+              </div>
               <h1>
                 <i class="fa fa-plug"></i> {{device.alias}}
               </h1>
@@ -99,7 +111,7 @@
 
         <div class="row">
 
-          <div class="col-md-2 col-sm-2 col-xs-12">
+          <div class="col-md-4 col-sm-4 col-xs-12 col-lg-4 col-xl-2">
             <div class="x_panel small tile">
               <div class="x_title">
                 <h2>
@@ -115,7 +127,7 @@
             </div>
           </div>
 
-          <div class="col-md-2 col-sm-2 col-xs-12">
+          <div class="col-md-4 col-sm-4 col-xs-12 col-lg-4 col-xl-2">
             <div class="x_panel small tile">
               <div class="x_title">
                 <h2>
@@ -129,7 +141,7 @@
             </div>
           </div>
 
-          <div class="col-md-2 col-sm-2 col-xs-12">
+          <div class="col-md-4 col-sm-4 col-xs-12 col-lg-4 col-xl-2">
             <div class="x_panel small tile">
               <div class="x_title">
                 <h2>
@@ -143,7 +155,7 @@
             </div>
           </div>
 
-          <div class="col-md-2 col-sm-2 col-xs-12">
+          <div class="col-md-4 col-sm-4 col-xs-12 col-lg-4 col-xl-2">
             <div class="x_panel small tile">
               <div class="x_title">
                 <h2>
@@ -157,7 +169,7 @@
             </div>
           </div>
 
-          <div class="col-md-2 col-sm-2 col-xs-12">
+          <div class="col-md-4 col-sm-4 col-xs-12 col-lg-4 col-xl-2">
             <div class="x_panel small tile">
               <div class="x_title">
                 <h2>
@@ -171,7 +183,7 @@
             </div>
           </div>
 
-          <div class="col-md-2 col-sm-2 col-xs-12">
+          <div class="col-md-4 col-sm-4 col-xs-12 col-lg-4 col-xl-2">
             <div class="x_panel small tile">
               <div class="x_title">
                 <h2>

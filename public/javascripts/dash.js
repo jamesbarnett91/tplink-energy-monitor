@@ -11,7 +11,7 @@ var dash = {
   init: function(deviceId) {
     this.deviceId = deviceId;
 
-    $('#' + deviceId).addClass('active');
+    $('.' + deviceId).addClass('active');
 
     this.initRealtimeGauge();
     this.initRealtimeTrendChart();
@@ -305,7 +305,13 @@ var dash = {
       $("#power-state").text("OFF").attr("class", "label label-danger");
     }
 
-    $("#uptime").text(moment.duration(powerState.uptime, "seconds").format("d[d] h[h] m[m]"));
+    if(powerState.uptime === 0) {
+      $("#uptime").text("-");
+    }
+    else {
+      $("#uptime").text(moment.duration(powerState.uptime, "seconds").format("d[d] h[h] m[m]", {largest: 2}));
+    }
+    
   },
 
 };

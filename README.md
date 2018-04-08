@@ -51,10 +51,10 @@ If you hit this issue you can try disabling the VirtualBox adapter in `Control P
 - [x] Show historical data
 - [x] Build dists
 - [x] Docker image
-- [ ] Support switching between multiple plugs (currently only works for the fist plug discovered)
+- [x] Support switching between multiple plugs
+- [x] Switch to websockets
 - [ ] Rescan for devices on the fly
 - [ ] Add daily cost metrics
-- [ ] Configurable poll rates
-- [ ] Switch to websockets
+
 
 
