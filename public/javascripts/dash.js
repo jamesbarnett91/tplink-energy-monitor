@@ -11,7 +11,9 @@ var dash = {
   init: function(deviceId) {
     this.deviceId = deviceId;
 
-    $('.' + deviceId).addClass('active');
+    if (this.deviceId) {
+      $('.' + deviceId).addClass('active');
+    }
 
     this.initRealtimeGauge();
     this.initRealtimeTrendChart();

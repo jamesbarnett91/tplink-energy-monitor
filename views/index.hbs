@@ -21,6 +21,13 @@
                     {{this.alias}}
                   </a>
                 </li>
+                {{else}}
+                <li>
+                  <a href='index.html'>
+                    <i class="fa fa-info"></i>
+                    no devices discovered yet
+                  </a>
+                </li>
                 {{/each}}
               </ul>
             </div>
@@ -41,6 +48,13 @@
                   <a title="Device Id: {{this.deviceId}}" href="/{{this.deviceId}}">
                     <i class="fa fa-plug"></i>
                     {{this.alias}}
+                  </a>
+                </li>
+                {{else}}
+                <li>
+                  <a href="index.html">
+                    <i class="fa fa-info"></i>
+                    no devices discovered yet
                   </a>
                 </li>
                 {{/each}}

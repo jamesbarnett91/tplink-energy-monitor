@@ -5,9 +5,15 @@ const deviceManager = require('../services/device-manager');
 
 router.get('/', function(req, res, next) {
 
-  let deviceId = sortDevices(deviceManager.getAllDevices())[0].deviceId;
+  let devices = sortDevices(deviceManager.getAllDevices());
 
-  res.redirect('/' + deviceId);
+  if (devices && devices.length > 0) {
+    let deviceId = devices[0].deviceId;
+
+    res.redirect('/' + deviceId);
+  } else {
+    res.render('index', {});
+  }
 
 });
 
