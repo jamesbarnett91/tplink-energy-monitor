@@ -212,9 +212,9 @@ var dash = {
 
   refreshRealtimeDisplay: function(realtime) {
 
-    var power = Math.round(realtime.power);
-    var current = realtime.current.toFixed(2);
-    var voltage = Math.round(realtime.voltage);
+    var power = Math.round(('power_mw' in realtime) ? (realtime.power_mw/1000) : realtime.power);
+    var current = (('current_ma' in realtime) ? (realtime.current_ma/1000) : realtime.current).toFixed(2);
+    var voltage = Math.round(('voltage_mv' in realtime) ? (realtime.voltage_mv/1000) : realtime.voltage);
 
     this.realtimeGauge.set(power);
     // might switch to Vue.js if this gets tedious 
@@ -240,7 +240,7 @@ var dash = {
 
       dash.dailyUsageChart.data.labels.push(day.format('MMM D'));
       dash.dailyUsageChart.data.datasets.forEach(function(dataset) {
-        dataset.data.push(entry.energy);
+        dataset.data.push(('energy_wh' in entry) ? (entry.energy_wh/1000) : entry.energy);
       });
     });
 
@@ -254,10 +254,12 @@ var dash = {
       return d.day === moment().date() && d.month === (moment().month()+1) && d.year === moment().year()
     });
 
-    $("#total-day").text(dailyTotal.energy.toFixed(2));
+    var energy = ('energy_wh' in dailyTotal) ? (dailyTotal.energy_wh/1000) : dailyTotal.energy
+    $("#total-day").text(energy.toFixed(2));
 
-    var total = usageData.reduce(function(t, d) {return t + d.energy}, 0);
+    var total = usageData.reduce(function(t, d) {return t + (('energy_wh' in d) ? (d.energy_wh/1000) : d.energy)}, 0);
     var avg = total/usageData.length;
+    console
 
     $("#avg-day").text(avg.toFixed(2));
 
@@ -277,7 +279,7 @@ var dash = {
 
       dash.monthlyUsageChart.data.labels.push(month.format('MMM'));
       dash.monthlyUsageChart.data.datasets.forEach(function(dataset) {
-        dataset.data.push(entry.energy);
+        dataset.data.push(('energy_wh' in entry) ? (entry.energy_wh/1000) : entry.energy);
       });
     });
 
@@ -290,10 +292,10 @@ var dash = {
     var monthlyTotal = usageData.find(function(m) {
       return m.month === (moment().month()+1) && m.year === moment().year()
     });
+    var energy = ('energy_wh' in monthlyTotal) ? (monthlyTotal.energy_wh/1000) : monthlyTotal.energy
+    $("#total-month").text(energy.toFixed(2));
 
-    $("#total-month").text(monthlyTotal.energy.toFixed(2));
-
-    var total = usageData.reduce(function(t, m) {return t + m.energy}, 0);
+    var total = usageData.reduce(function(t, m) {return t + (('energy_wh' in m) ? (m.energy_wh/1000) : m.energy)}, 0);
     var avg = total/usageData.length;
 
     $("#avg-month").text(avg.toFixed(2));
