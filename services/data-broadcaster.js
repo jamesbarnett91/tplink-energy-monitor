@@ -13,7 +13,7 @@ function broadcastMonthlyUsageUpdate(deviceId, data) {
 }
 
 function broadcastPowerStateUpdate(deviceId, data) {
-  broadcast(generatePayload('powersState', deviceId, data));
+  broadcast(generatePayload('powerState', deviceId, data));
 }
 
 function broadcast(payload) {
