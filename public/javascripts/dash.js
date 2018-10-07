@@ -7,6 +7,7 @@ var dash = {
 
   dailyUsageChart: null,
   monthlyUsageChart: null,
+  usageLogChart: null,
 
   init: function(deviceId) {
     this.deviceId = deviceId;
@@ -19,6 +20,7 @@ var dash = {
     this.initRealtimeTrendChart();
     this.initDailyUsageChart();
     this.initMonthlyUsageChart();
+    this.initUsageLog();
     
     this.initWsConnection();
   },
@@ -60,6 +62,12 @@ var dash = {
       }
       else if(message.dataType === 'powerState') {
         dash.refreshPowerState(message.data);
+      }
+      else if(message.dataType === 'newLogEntry') {
+        dash.addLogEntry(message.data, true);
+      }
+      else if(message.dataType === 'loggedData') {
+        dash.loadLogEntries(message.data);
       }
     }
 
@@ -201,6 +209,61 @@ var dash = {
     });
   },
 
+  initUsageLog: function() {
+    var ctx = document.getElementById('logged-usage-chart').getContext('2d');
+    this.usageLogChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        datasets: [{
+          label: "Power (W)",
+          borderColor: 'rgb(255, 99, 132)',
+          data: []
+        }]
+      },
+      options: {
+        legend: {
+          display: false
+        },
+        scales: {
+          xAxes: [{
+            display: true,
+          }],
+          yAxes: [{
+            ticks: {
+              beginAtZero: true
+            }
+          }]
+        },
+        maintainAspectRatio: false,
+        tooltips: {
+          intersect: false
+        }
+      }
+    });
+  },
+
+  addLogEntry: function (logEntry, updateChart) {
+
+    dash.usageLogChart.data.labels.push(moment(logEntry.timestamp, 'x').format("MMM Do hh:mm"),);
+    dash.usageLogChart.data.datasets.forEach(function (dataset) {
+      dataset.data.push({
+        x: logEntry.timestamp,
+        y: logEntry.power
+      });
+    });
+    if (updateChart) {
+      dash.usageLogChart.update();
+    }
+  },
+
+  loadLogEntries: function(logEntries) {
+    logEntries.forEach(function(entry) {
+      dash.addLogEntry(entry, false);
+    })
+
+    dash.usageLogChart.update();
+  },
+
   realtimeTrendChartOnRefresh: function(chart) {
     chart.data.datasets.forEach(function(dataset) {
       dataset.data.push({
@@ -259,7 +322,6 @@ var dash = {
 
     var total = usageData.reduce(function(t, d) {return t + (('energy_wh' in d) ? (d.energy_wh/1000) : d.energy)}, 0);
     var avg = total/usageData.length;
-    console
 
     $("#avg-day").text(avg.toFixed(2));
 
