@@ -53,8 +53,7 @@ If you hit this issue you can try disabling the VirtualBox adapter in `Control P
 - [x] Docker image
 - [x] Support switching between multiple plugs
 - [x] Switch to websockets
+- [ ] 24hr usage log
+- [ ] Show cumulative energy usage form all devices
 - [ ] Rescan for devices on the fly
 - [ ] Add daily cost metrics
-
-
-
