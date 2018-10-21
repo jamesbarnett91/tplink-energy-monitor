@@ -1,4 +1,5 @@
 const { Client } = require('tplink-smarthome-api');
+const dataLogger = require('./data-logger');
 
 const client = new Client();
 var devices = [];
@@ -9,6 +10,8 @@ client.startDiscovery({
   }).on('plug-new', plug => {
   console.log('Found device: ' + plug.alias + ' [' + plug.deviceId + ']');
   devices.push(plug);
+
+  dataLogger.startLogging(plug);
 });
 
 module.exports.getDevice = function(deviceId) {
