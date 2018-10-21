@@ -14,6 +14,7 @@ Written in Node.js + Express, and fully responsive so works well on mobile devic
 - Automatically scans for TP-Link smart plug devices on your local network on server start.
 - Realtime current, voltage, power readings.
 - Recent power usage trend chart.
+- Configurable power usage history logger.
 - Plug on/off state and uptime.
 - Daily & monthly energy usage totals and averages.
 - Historical daily and monthly energy usage charts.
@@ -51,7 +52,7 @@ By default this app will log the current power usage of each plug every minute, 
   "maxLogEntries": 1440 // 24hrs at 1 log/min
 }
 ```
-Log entries are written in JSON format to the project root directory, with the filename `<plug-id>-log.json` e.g. `8FCA808B79-log.json`
+Logs are written in JSON format to the project root directory, with the filename `<plug-id>-log.json` e.g. `8FCA808B79-log.json`. Each file contains all the log entries for that plug, up to the maximum configured number, at which point it will remove the oldest entry when adding a new one.
 
 If you are running the app from the Docker image and you want to change the logger config, you can mount your desired config file into `/opt/tplink-monitor/`. The logs can be accessed in the same way.
 
