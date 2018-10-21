@@ -244,11 +244,11 @@ var dash = {
 
   addLogEntry: function (logEntry, updateChart) {
 
-    dash.usageLogChart.data.labels.push(moment(logEntry.timestamp, 'x').format("MMM Do hh:mm"),);
+    dash.usageLogChart.data.labels.push(moment(logEntry.ts, 'x').format("MMM Do HH:mm"),);
     dash.usageLogChart.data.datasets.forEach(function (dataset) {
       dataset.data.push({
-        x: logEntry.timestamp,
-        y: logEntry.power
+        x: logEntry.ts,
+        y: logEntry.pw
       });
     });
     if (updateChart) {

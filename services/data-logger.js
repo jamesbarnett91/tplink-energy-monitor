@@ -1,9 +1,58 @@
 const fs = require('fs');
 const dataBroadcaster = require('./data-broadcaster');
 
+let logIntervalMs;
+let maxLogEntries;
+
+loadLogConfig();
+
+function loadLogConfig() {
+  try {
+    let config  = JSON.parse(fs.readFileSync('logger-config.json', 'utf8'));
+    logIntervalMs = (config.logIntervalSeconds * 1000);
+    maxLogEntries = config.maxLogEntries;
+
+  }
+  catch (err) {
+    console.warn('Error reading logger config. Reverting to defaults.', err);
+    logIntervalMs = 60000 // 1 min
+    maxLogEntries = 1440  // 24 hrs at 1/min
+ }  
+}
+
 function startLogging(device) {
-  setInterval(() => { log(device); }, 60000);
-  console.log('Logging started for ' + device.alias + ' [' + device.deviceId + ']');
+  setInterval(() => { log(device); }, logIntervalMs);
+  console.log('Logging started for ' + device.alias + ' [' + device.deviceId + '] every ' + (logIntervalMs/1000) + ' seconds');
+}
+
+function writeLog(filePath, log) {
+  fs.writeFile(filePath, JSON.stringify(log), { flag: 'w' }, (err) => {
+    if (err) {
+      console.warn('Error writing log for ' + device.alias + ' [' + device.deviceId + ']', err);
+    }
+  });
+}
+
+function getLogEntries(filePath, callback) {
+  
+  fs.access(filePath, fs.constants.F_OK, (err) => {
+    if(err) {
+      // No log file, init empty one
+      writeLog(filePath, []);
+      callback([]);
+    }
+    else {
+      fs.readFile(filePath, 'utf8', (err, data) => {
+        if (err) {
+          console.warn('Error reading usage log ' + filePath, err);
+          callback([]);
+        }
+        else {
+          callback(JSON.parse(data));
+        }
+      });
+    }
+  });
 }
 
 function log(device) {
@@ -11,49 +60,35 @@ function log(device) {
   device.emeter.getRealtime().then(response => {
 
     let logEntry = {
-      timestamp: Date.now(),
-      power: (('power_mw' in response) ? (response.power_mw / 1000) : response.power)
+      ts: Date.now(),
+      pw: (('power_mw' in response) ? (response.power_mw / 1000) : response.power)
     }
 
-    // TODO only log up to a max number of entries
+    let filePath = getLogPath(device.deviceId);
 
-    fs.writeFile(device.deviceId + '-log.json', JSON.stringify(logEntry) + '\n', { flag: 'a' }, (err) => {
-      if(err) {
-        console.warn('Error writing log entry for ' + device.alias + ' [' + device.deviceId + ']', err);
-      }
-      else {
-        dataBroadcaster.broadcastNewLogEntry(device.deviceId, logEntry);
-      }
+    getLogEntries(filePath, (entries) => {
+      entries.push(logEntry)
+      
+      // Remove old entries
+      entries.splice(0, entries.length - maxLogEntries);
 
-    });
+      writeLog(filePath, entries);
+      dataBroadcaster.broadcastNewLogEntry(device.deviceId, logEntry);
+    })
 
   });
-
 }
 
-function getAllEntries(deviceId, callback) {
-  fs.readFile(deviceId + '-log.json', 'utf8', (err, data) => {
-    if(err) {
-      console.warn('Error reading usage log ' + deviceId + '-log.json', err);
-      return;
-   }
-   else {
-      let logLines = data.split(/\r?\n/);
-      let logEntries = [];
+function getLogPath(deviceId) {
+  return deviceId + '-log.json';
+}
 
-      logLines.forEach(line => {
-        if(line.length > 0) {
-          logEntries.push(JSON.parse(line))
-        }
-      });
-
-     callback(logEntries);
-    }
-  });
+function getLogEntriesForDevice(deviceId, callback) {
+  return getLogEntries(getLogPath(deviceId), callback);
 }
 
 module.exports = {
   startLogging: startLogging,
   log: log,
-  getAllEntries: getAllEntries
+  getLogEntriesForDevice: getLogEntriesForDevice
 }

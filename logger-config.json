@@ -1,0 +1,4 @@
+{
+  "logIntervalSeconds": 1, 
+  "maxLogEntries": 1440
+}

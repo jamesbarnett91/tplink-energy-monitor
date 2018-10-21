@@ -21,7 +21,7 @@ router.ws('/', function(ws, req) {
       ws.send(dataBroadcaster.generatePayload('dailyUsage', deviceId, cachedData.dailyUsage));
       ws.send(dataBroadcaster.generatePayload('monthlyUsage', deviceId, cachedData.monthlyUsage));
       ws.send(dataBroadcaster.generatePayload('powerState', deviceId, cachedData.powerState));
-      dataLogger.getAllEntries(deviceId, (loggedData) => {
+      dataLogger.getLogEntriesForDevice(deviceId, (loggedData) => {
         ws.send(dataBroadcaster.generatePayload('loggedData', deviceId, loggedData));
       });
       
