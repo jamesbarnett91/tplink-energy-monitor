@@ -40,6 +40,21 @@ $ npm install
 $ npm start
 ```
 
+# Logging
+By default this app will log the current power usage of each plug every minute, and store 24 hours worth of entries (removing the older entries as new ones are added). This log interval and max retention limit are configurable in the `logger-config.json` file in the root project directory. 
+```
+{
+  // The number of seconds between each log entry
+  "logIntervalSeconds": 60, 
+  
+  // The maximum number of log entries to store
+  "maxLogEntries": 1440 // 24hrs at 1 log/min
+}
+```
+Log entries are written in JSON format to the project root directory, with the filename `<plug-id>-log.json` e.g. `8FCA808B79-log.json`
+
+If you are running the app from the Docker image and you want to change the logger config, you can mount your desired config file into `/opt/tplink-monitor/`. The logs can be accessed in the same way.
+
 ### Note
 Because the server needs access to your local network to scan for TP-Link device, you must run the server on the same network which your TP Link plugs are connected to. For the vast majority of people this shouldn't be an issue, and you can still use different network interfaces (i.e. plug(s) on WiFi and server on ethernet) as long as they all connect to the same network.
 
@@ -53,7 +68,7 @@ If you hit this issue you can try disabling the VirtualBox adapter in `Control P
 - [x] Docker image
 - [x] Support switching between multiple plugs
 - [x] Switch to websockets
-- [ ] 24hr usage log
+- [x] Configurable realtime usage logging
 - [ ] Show cumulative energy usage form all devices
 - [ ] Rescan for devices on the fly
 - [ ] Add daily cost metrics
