@@ -55,7 +55,11 @@ By default this app will log the current power usage of each plug every minute, 
 The logged data is shown on the 'Logged Usage' graph on the dashboard.
 Logs are written in JSON format to the project root directory, with the filename `<plug-id>-log.json` e.g. `8FCA808B79-log.json`. Each file contains all the log entries for that plug, up to the maximum configured number, at which point it will remove the oldest entry when adding a new one.
 
-If you are running the app from the Docker image and you want to change the logger config, you can mount your desired config file into `/opt/tplink-monitor/`. The logs can be accessed in the same way
+If you are running the app from the Docker image and you want to change the logger config, you can mount your desired config file into `/opt/tplink-monitor/`. The logs can be accessed in the same way.
+
+Each logfile is a JSON array of entries. Each entry contains a timestamp in unix/epoch format `ts`, and a power reading in watts `pw`. 
+
+If you want to analyse the log files in Excel or similar office tools you can convert the JSON file into csv format. This can be done numerous ways including online converters such as [konklone.io/json](https://konklone.io/json/), or if you are on a Unix system (or otherwise have access to `sed`) user [ballachango](https://github.com/jamesbarnett91/tplink-energy-monitor/issues/6#issuecomment-433663873) has posted this sed command `sed -e 's/},{/\\\n/g' -e 's/[]["tspw:}{\\]//g' <input.json> > log.csv`
 
 # Note
 Because the server needs access to your local network to scan for TP-Link device, you must run the server on the same network which your TP Link plugs are connected to. For the vast majority of people this shouldn't be an issue, and you can still use different network interfaces (i.e. plug(s) on WiFi and server on ethernet) as long as they all connect to the same network.
