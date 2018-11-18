@@ -7,12 +7,19 @@ var devices = [];
 client.startDiscovery({
     deviceTypes: ['plug'],
     discoveryTimeout: 20000
-  }).on('plug-new', plug => {
-  console.log('Found device: ' + plug.alias + ' [' + plug.deviceId + ']');
-  devices.push(plug);
+  }).on('plug-new', registerPlug);
 
-  dataLogger.startLogging(plug);
-});
+function registerPlug(plug) {
+  
+  if (plug.supportsEmeter) {
+    console.log('Found device with energy monitor support: ' + plug.alias + ' [' + plug.deviceId + ']');
+    devices.push(plug);
+    dataLogger.startLogging(plug);
+  } else {
+    console.log('Skipping device: ' + plug.alias + ' [' + plug.deviceId + ']. Energy monitoring not supported.');
+  }
+  
+}
 
 module.exports.getDevice = function(deviceId) {
 
