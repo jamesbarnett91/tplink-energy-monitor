@@ -26,11 +26,7 @@ function fetchRealtimeUsage() {
       let deviceId = device.deviceId;
       device.emeter.getRealtime().then(response => {
 
-        // Voltage seems to be reported as its peak to peak value, not RMS.
-        // Show the RMS value since thats what would you expect to see.
-        // i.e. 220v not 310v (in the U.K)
-        response.voltage = response.voltage / Math.sqrt(2);
-  
+        response.voltage = normaliseVoltage(response, device);  
         updateCache(cachedRealtimeUsageData, deviceId, response);
 
         dataBroadcaster.broadcastRealtimeUsageUpdate(deviceId, response);
@@ -263,6 +259,22 @@ function updateCache(cache, deviceId, data) {
   }
   else {
     cachedData.data = data;
+  }
+}
+
+/*
+* On older firmware versions (not sure exactly which since its not documented anywhere)
+* voltage seems to be reported as its peak to peak value, not RMS.
+* So we show the RMS value since thats what would you expect to see.
+* i.e. 220v not 310v (in the U.K). 
+* This is applied for all 1.0.x firmware versions.
+*/
+function normaliseVoltage(response, device) {
+  if (device.softwareVersion.startsWith("1.0")) {
+    return response.voltage / Math.sqrt(2);
+  }
+  else {
+    return response.voltage;
   }
 }
 
