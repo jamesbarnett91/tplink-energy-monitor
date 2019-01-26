@@ -23,7 +23,7 @@ Written in Node.js + Express, and fully responsive so works well on mobile devic
 You can use any of the following methods to get the project running:
 
 ### Packaged executable
-The easiest way to run the project is to download one of the packaged executables from the [releases page](https://github.com/jamesbarnett91/tplink-monitor/releases). These are single file executables with all dependencies included. Just download the relevant file for your OS (Windows, Linux and MacOS available) and double click the file. Then go to `localhost:3000` in your browser to access the dashboard.
+The easiest way to run the project is to download one of the packaged executables from the [releases page](https://github.com/jamesbarnett91/tplink-monitor/releases). These are zip files containing a single executable file and some config. Just download the relevant file for your OS (Windows, Linux and MacOS available), extract the zip somewhere and double click executable. Then go to `localhost:3000` in your browser to access the dashboard.
 
 ### Docker
 Alternatively, you can pull the `jbarnett/tplink-energy-monitor` image and run that.
