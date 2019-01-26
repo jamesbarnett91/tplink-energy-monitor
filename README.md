@@ -42,10 +42,10 @@ $ npm start
 ```
 
 # Logging
-By default this app will log the current power usage of each plug every minute, and store 24 hours worth of entries (removing the older entries as new ones are added). This log interval and max retention limit are configurable in the `logger-config.json` file in the root project directory.
+By default this app will log the current power usage of each plug every minute, and store 24 hours worth of entries (removing the older entries as new ones are added) to files in the root project directory. This log interval, max retention limit and log directory are configurable in the `logger-config.json` file in the root project directory.
 ```
 {
-  // Directory path where to write log files. It will be created if it doesn't already exist.
+  // Directory path specifying where log files should be stored. It will be created if it doesn't already exist.
   "logDirPath": "path/to/logs",
 
   // The number of seconds between each log entry
@@ -55,13 +55,14 @@ By default this app will log the current power usage of each plug every minute, 
   "maxLogEntries": 1440 // 24hrs at 1 log/min
 }
 ```
-The logged data is shown on the 'Logged Usage' graph on the dashboard.
-Logs are written in JSON format, with the filename `<plug-id>-log.json` e.g. `8FCA808B79-log.json`. Each file contains all the log entries for that plug, up to the maximum configured number, at which point it will remove the oldest entry when adding a new one.
 
-You can specify path to a custom logger config file as the first command-line argument, e.g.
+You can also specify the path to a custom logger config file as a command line argument, and the application will load that config rather than the default one in the project root e.g.
 ```
 npm start /home/username/tplink-logger-config.json
 ```
+
+The logged data is shown on the 'Logged Usage' graph on the dashboard.
+Logs are written in JSON format, with the filename `<plug-id>-log.json` e.g. `8FCA808B79-log.json`. Each file contains all the log entries for that plug, up to the maximum configured number, at which point it will remove the oldest entry when adding a new one.
 
 If you are running the app from the Docker image and you want to change the logger config, you can mount your desired config file into `/opt/tplink-monitor/`. The logs can be accessed in the same way.
 

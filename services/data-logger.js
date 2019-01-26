@@ -43,11 +43,13 @@ function startLogging(device) {
 }
 
 function writeLog(filePath, log) {
-  fs.writeFileSync(filePath, JSON.stringify(log), { flag: 'w' }, (err) => {
-    if (err) {
-      console.warn('Error writing log for ' + device.alias + ' [' + device.deviceId + ']', err);
-    }
-  });
+  try {
+    // Switched to sync write for now. TODO investigate issue from PR #19
+    fs.writeFileSync(filePath, JSON.stringify(log), { flag: 'w' });
+  }
+  catch (err) {
+    console.warn('Error writing log for ' + device.alias + ' [' + device.deviceId + ']', err);
+  }
 }
 
 function getLogEntries(filePath, callback) {
