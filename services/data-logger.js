@@ -1,6 +1,9 @@
 const fs = require('fs');
+const path = require('path');
+const shell = require('shelljs');
 const dataBroadcaster = require('./data-broadcaster');
 
+let logDirPath;
 let logIntervalMs;
 let maxLogEntries;
 
@@ -8,16 +11,30 @@ loadLogConfig();
 
 function loadLogConfig() {
   try {
-    let config  = JSON.parse(fs.readFileSync('logger-config.json', 'utf8'));
+    // Use logger config file specified on command line, otherwise use default one.
+    if (process.argv.length > 2) {
+      loggerConfigPath = process.argv[2];
+    } else {
+      loggerConfigPath = 'logger-config.json';
+    }
+    console.log('Logger config file: "' + loggerConfigPath + '"')
+
+    let config  = JSON.parse(fs.readFileSync(loggerConfigPath, 'utf8'));
+    logDirPath = config.logDirPath;
     logIntervalMs = (config.logIntervalSeconds * 1000);
     maxLogEntries = config.maxLogEntries;
 
   }
   catch (err) {
     console.warn('Error reading logger config. Reverting to defaults.', err);
+    logDirPath = '.'      // Current directory
     logIntervalMs = 60000 // 1 min
     maxLogEntries = 1440  // 24 hrs at 1/min
- }  
+  }
+
+  // Create log directory path if it doesn't already exist.
+  console.log('Log directory path: "' + logDirPath + '"')
+  shell.mkdir('-p', logDirPath);
 }
 
 function startLogging(device) {
@@ -26,7 +43,7 @@ function startLogging(device) {
 }
 
 function writeLog(filePath, log) {
-  fs.writeFile(filePath, JSON.stringify(log), { flag: 'w' }, (err) => {
+  fs.writeFileSync(filePath, JSON.stringify(log), { flag: 'w' }, (err) => {
     if (err) {
       console.warn('Error writing log for ' + device.alias + ' [' + device.deviceId + ']', err);
     }
@@ -34,7 +51,7 @@ function writeLog(filePath, log) {
 }
 
 function getLogEntries(filePath, callback) {
-  
+
   fs.access(filePath, fs.constants.F_OK, (err) => {
     if(err) {
       // No log file, init empty one
@@ -68,7 +85,7 @@ function log(device) {
 
     getLogEntries(filePath, (entries) => {
       entries.push(logEntry)
-      
+
       // Remove old entries
       entries.splice(0, entries.length - maxLogEntries);
 
@@ -80,7 +97,7 @@ function log(device) {
 }
 
 function getLogPath(deviceId) {
-  return deviceId + '-log.json';
+  return path.join(logDirPath, deviceId + '-log.json');
 }
 
 function getLogEntriesForDevice(deviceId, callback) {
