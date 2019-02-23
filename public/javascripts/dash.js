@@ -244,7 +244,7 @@ var dash = {
 
   addLogEntry: function (logEntry, updateChart) {
 
-    dash.usageLogChart.data.labels.push(moment(logEntry.ts, 'x').format("MMM Do HH:mm"),);
+    dash.usageLogChart.data.labels.push(moment(logEntry.ts, 'x').format("MMM Do HH:mm"));
     dash.usageLogChart.data.datasets.forEach(function (dataset) {
       dataset.data.push({
         x: logEntry.ts,
