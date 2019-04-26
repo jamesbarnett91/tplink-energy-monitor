@@ -1,13 +1,25 @@
 const { Client } = require('tplink-smarthome-api');
 const dataLogger = require('./data-logger');
+const interfaces = require('os').networkInterfaces();
 
-const client = new Client();
 var devices = [];
 
-client.startDiscovery({
+function startDiscovery(bindAddress) {
+  console.log('Starting discovery on interface: ' + bindAddress);
+  var client = new Client();
+  client.startDiscovery({
     deviceTypes: ['plug'],
+    address: bindAddress,
     discoveryTimeout: 20000
-  }).on('plug-new', registerPlug);
+  }).on('plug-new', registerPlug);  
+}
+
+Object.keys(interfaces)
+  .reduce((results, name) => results.concat(interfaces[name]), [])
+  .filter((iface) => iface.family === 'IPv4' && !iface.internal)
+  .map((iface) => iface.address)
+  .map(startDiscovery);
+
 
 function registerPlug(plug) {
   
