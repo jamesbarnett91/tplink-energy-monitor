@@ -389,9 +389,10 @@ var dash = {
 
     if(powerState.uptime === 0) {
       $("#uptime").text("-");
-    }
-    else {
+    } else if (powerState.uptime > 60) {
       $("#uptime").text(moment.duration(powerState.uptime, "seconds").format("d[d] h[h] m[m]", {largest: 2}));
+    } else {
+      $("#uptime").text(moment.duration(powerState.uptime, "seconds").format("m[m] s[s]", {largest: 2}));
     }
   }
 };
