@@ -1,4 +1,6 @@
 var dash = {
+  ws: null,
+
   deviceId: null,
 
   realtimeGauge: null,
@@ -23,11 +25,12 @@ var dash = {
     this.initUsageLog();
     
     this.initWsConnection();
+    this.initTogglePowerState();
   },
 
   initWsConnection: function() {
     var wsUri = 'ws://' + window.location.host + '/ws'
-    var ws = new WebSocket(wsUri);
+    ws = new WebSocket(wsUri);
     ws.onopen = function () {
       console.log('Websocket connection established');
       $('#connection-error').hide(200);
@@ -243,6 +246,19 @@ var dash = {
     });
   },
 
+  initTogglePowerState: () => {
+    $('#power-state').on('click', () => {
+      if (ws) {
+        ws.send(JSON.stringify(
+          {
+            requestType: 'togglePowerState',
+            deviceId: dash.deviceId
+          }
+        ));
+      }
+    });
+  },
+
   addLogEntry: function (logEntry, updateChart) {
 
     dash.usageLogChart.data.labels.push(moment(logEntry.ts, 'x').format("MMM Do HH:mm"));
@@ -421,7 +437,5 @@ var dash = {
     else {
       $("#uptime").text(moment.duration(powerState.uptime, "seconds").format("d[d] h[h] m[m]", {largest: 2}));
     }
-    
-  },
-
+  }
 };
