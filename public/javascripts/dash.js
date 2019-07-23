@@ -272,6 +272,8 @@ var dash = {
   },
 
   loadLogEntries: function (logEntries) {
+    dash.initUsageLog();
+    
     logEntries.forEach(function (entry) {
       dash.addLogEntry(entry, false);
     })
