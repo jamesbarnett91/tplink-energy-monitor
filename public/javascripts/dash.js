@@ -275,7 +275,7 @@ var dash = {
 
   refreshRealtimeDisplay: function(realtime) {
 
-    var power = Math.round(('power_mw' in realtime) ? (realtime.power_mw/1000) : realtime.power);
+    var power = (('power_mw' in realtime) ? (realtime.power_mw/1000) : realtime.power).toPrecision(3);
     var current = (('current_ma' in realtime) ? (realtime.current_ma/1000) : realtime.current).toFixed(2);
     var voltage = Math.round(('voltage_mv' in realtime) ? (realtime.voltage_mv/1000) : realtime.voltage);
 
