@@ -26,7 +26,8 @@ var dash = {
   },
 
   initWsConnection: function() {
-    var wsUri = 'ws://' + window.location.host + '/ws'
+    var scheme = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+    var wsUri = scheme + window.location.host + '/ws';
     var ws = new WebSocket(wsUri);
     ws.onopen = function () {
       console.log('Websocket connection established');
