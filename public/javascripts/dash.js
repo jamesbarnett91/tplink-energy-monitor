@@ -303,7 +303,7 @@ var dash = {
 
       dash.dailyUsageChart.data.labels.push(day.format('MMM D'));
       dash.dailyUsageChart.data.datasets.forEach(function(dataset) {
-        dataset.data.push(('energy_wh' in entry) ? (entry.energy_wh/1000) : entry.energy);
+        dataset.data.push(dash.energyEntryInkWh(entry));
       });
     });
 
@@ -317,10 +317,10 @@ var dash = {
       return d.day === moment().date() && d.month === (moment().month()+1) && d.year === moment().year()
     });
 
-    var energy = ('energy_wh' in dailyTotal) ? (dailyTotal.energy_wh/1000) : dailyTotal.energy
+    var energy = dash.energyEntryInkWh(dailyTotal)
     $("#total-day").text(energy.toFixed(2));
 
-    var total = usageData.reduce(function(t, d) {return t + (('energy_wh' in d) ? (d.energy_wh/1000) : d.energy)}, 0);
+    var total = usageData.reduce(function(t, d) {return t + dash.energyEntryInkWh(d)}, 0);
     var avg = total/usageData.length;
 
     $("#avg-day").text(avg.toFixed(2));
@@ -354,13 +354,19 @@ var dash = {
     var monthlyTotal = usageData.find(function(m) {
       return m.month === (moment().month()+1) && m.year === moment().year()
     });
-    var energy = ('energy_wh' in monthlyTotal) ? (monthlyTotal.energy_wh/1000) : monthlyTotal.energy
+    var energy = dash.energyEntryInkWh(monthlyTotal)
     $("#total-month").text(energy.toFixed(2));
 
-    var total = usageData.reduce(function(t, m) {return t + (('energy_wh' in m) ? (m.energy_wh/1000) : m.energy)}, 0);
-    var avg = total/usageData.length;
+    // don't use latest (current) month in the average and don't use months with zero usage
+    var nonZeroCompleteMonths = usageData.slice(0,usageData.length-1).filter( u => dash.energyEntryInkWh(u) > 0)
+    var total = nonZeroCompleteMonths.reduce(function(t, m) {return t + dash.energyEntryInkWh(m)}, 0);
+    var avg = nonZeroCompleteMonths.length == 0 ? 0 : total/nonZeroCompleteMonths.length;
 
     $("#avg-month").text(avg.toFixed(2));
+  },
+
+  energyEntryInkWh: function (entry) {
+    return ('energy_wh' in entry) ? (entry.energy_wh/1000) : entry.energy;
   },
 
   refreshPowerState: function(powerState) {
