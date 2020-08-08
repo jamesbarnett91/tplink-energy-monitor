@@ -92,8 +92,8 @@ var dash = {
       },
       staticZones: [
         { strokeStyle: "#30B32D", min: 0, max: 500 },
-        { strokeStyle: "#FFDD00", min: 500, max: 1500 },
-        { strokeStyle: "#F03E3E", min: 1500, max: 3000 }
+        { strokeStyle: "#FFDD00", min: 500, max: 2400 },
+        { strokeStyle: "#F03E3E", min: 2400, max: 3000 }
       ]
     };
     var target = document.getElementById('rtu-gauge');
