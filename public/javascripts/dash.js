@@ -153,7 +153,7 @@ var dash = {
       type: 'bar',
       data: {
         datasets: [{
-          label: "Energy (kWH)",
+          label: "Energy (kWh)",
           borderColor: 'rgb(255, 99, 132)',
           backgroundColor: 'rgb(255, 99, 132)',
           data: []
@@ -184,7 +184,7 @@ var dash = {
       type: 'bar',
       data: {
         datasets: [{
-          label: "Energy (kWH)",
+          label: "Energy (kWh)",
           borderColor: 'rgb(255, 99, 132)',
           backgroundColor: 'rgb(255, 99, 132)',
           data: []
