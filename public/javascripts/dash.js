@@ -323,6 +323,7 @@ var dash = {
     var total = usageData.reduce(function(t, d) {return t + dash.energyEntryInkWh(d)}, 0);
     var avg = total/usageData.length;
 
+	$("#30total").text(total.toFixed(0))
     $("#avg-day").text(avg.toFixed(2));
 
   },
@@ -363,6 +364,8 @@ var dash = {
     var avg = nonZeroCompleteMonths.length == 0 ? 0 : total/nonZeroCompleteMonths.length;
 
     $("#avg-month").text(avg.toFixed(2));
+	var allTotal = total + dash.energyEntryInkWh(usageData[usageData.length-1])
+	$("#monthstotal").text(allTotal.toFixed(0))
   },
 
   energyEntryInkWh: function (entry) {
