@@ -68,6 +68,7 @@ var dash = {
       }
       else if(message.dataType === 'loggedData') {
         dash.loadLogEntries(message.data);
+        dash.loadLastSession(message.data);
       }
     }
 
@@ -264,6 +265,40 @@ var dash = {
     dash.usageLogChart.update();
   },
 
+  loadLastSession: function(logEntries) {
+    var threshold = 5
+    var startIndex = 0
+    for (i=logEntries.length-1; i>0; i--) {
+      if (logEntries[i].pw > threshold) {
+        startIndex = i
+        break
+      }
+    }
+    if (startIndex > 0) {
+      var endIndex = -1
+      for (i=startIndex-1;i>=0; i--) {
+        if (logEntries[i].pw < threshold || i==0) {
+          endIndex = i
+          break
+        }
+      }
+      if (endIndex >= 0) {
+        var lastSessionkWh = 0
+        if (startIndex = logEntries.length-1) {
+          startIndex--
+        }
+        for (i=endIndex; i<startIndex; i++) {
+          var entry = logEntries[i]
+          var power = entry.pw
+          var time = logEntries[i+1].ts - entry.ts
+          var kWh = power * time / 3600000000
+          lastSessionkWh += kWh
+        }
+      }
+      $("#lastsession").text((endIndex==0 ? ">" : "") + lastSessionkWh.toFixed(1))
+    }
+  },
+
   realtimeTrendChartOnRefresh: function(chart) {
     chart.data.datasets.forEach(function(dataset) {
       dataset.data.push({
@@ -342,7 +377,7 @@ var dash = {
 
       dash.monthlyUsageChart.data.labels.push(month.format('MMM'));
       dash.monthlyUsageChart.data.datasets.forEach(function(dataset) {
-        dataset.data.push(('energy_wh' in entry) ? (entry.energy_wh/1000) : entry.energy);
+        dataset.data.push(dash.energyEntryInkWh(entry));
       });
     });
 
