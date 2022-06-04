@@ -16,7 +16,7 @@ function startDiscovery(bindAddress) {
 
 Object.keys(interfaces)
   .reduce((results, name) => results.concat(interfaces[name]), [])
-  .filter((iface) => iface.family === 'IPv4' && !iface.internal)
+  .filter((iface) => iface.family === 4 && !iface.internal)
   .map((iface) => iface.address)
   .map(startDiscovery);
 
