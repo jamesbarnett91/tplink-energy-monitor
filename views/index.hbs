@@ -129,7 +129,7 @@
             <div class="x_panel tile">
               <div class="x_title">
                 <h2>
-                  <strong>Logged Usage</strong>
+                  <strong>Logged Usage (last <span id="lastsession">-</span> kWh)</strong>
                 </h2>
                 <div class="clearfix"></div>
               </div>
@@ -177,12 +177,40 @@
             <div class="x_panel small tile">
               <div class="x_title">
                 <h2>
+                  <strong>Daily average</strong>
+                </h2>
+                <div class="clearfix"></div>
+              </div>
+              <div class="x_content small">
+                <h1><span id="avg-day">-</span> <small>kWh</small></h1>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4 col-sm-4 col-xs-12 col-lg-4 col-xl-2">
+            <div class="x_panel small tile">
+              <div class="x_title">
+                <h2>
                   <strong>Total today</strong>
                 </h2>
                 <div class="clearfix"></div>
               </div>
               <div class="x_content small">
-                <h1><span id="total-day">-</span> <small>kWH</small></h1>
+                <h1><span id="total-day">-</span> <small>kWh</small></h1>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4 col-sm-4 col-xs-12 col-lg-4 col-xl-2">
+            <div class="x_panel small tile">
+              <div class="x_title">
+                <h2>
+                  <strong>Monthly average</strong>
+                </h2>
+                <div class="clearfix"></div>
+              </div>
+              <div class="x_content small">
+                <h1><span id="avg-month">-</span> <small>kWh</small></h1>
               </div>
             </div>
           </div>
@@ -196,35 +224,7 @@
                 <div class="clearfix"></div>
               </div>
               <div class="x_content small">
-                <h1><span id="total-month">-</span> <small>kWH</small></h1>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-md-4 col-sm-4 col-xs-12 col-lg-4 col-xl-2">
-            <div class="x_panel small tile">
-              <div class="x_title">
-                <h2>
-                  <strong>Daily avg</strong>
-                </h2>
-                <div class="clearfix"></div>
-              </div>
-              <div class="x_content small">
-                <h1><span id="avg-day">-</span> <small>kWH</small></h1>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-md-4 col-sm-4 col-xs-12 col-lg-4 col-xl-2">
-            <div class="x_panel small tile">
-              <div class="x_title">
-                <h2>
-                  <strong>Monthly avg</strong>
-                </h2>
-                <div class="clearfix"></div>
-              </div>
-              <div class="x_content small">
-                <h1><span id="avg-month">-</span> <small>kWH</small></h1>
+                <h1><span id="total-month">-</span> <small>kWh</small></h1>
               </div>
             </div>
           </div>
@@ -237,7 +237,7 @@
             <div class="x_panel tile">
               <div class="x_title">
                 <h2>
-                  <strong>Last 30 days (kWH)</strong>
+                  <strong>Last 30 days total <span id="30total">-</span> kWh</strong>
                 </h2>
                 <div class="clearfix"></div>
               </div>
@@ -251,7 +251,7 @@
             <div class="x_panel tile">
               <div class="x_title">
                 <h2>
-                  <strong>Last 12 months (kWH)</strong>
+                  <strong>Last 12 months total <span id="monthstotal">-</span> kWh</strong>
                 </h2>
                 <div class="clearfix"></div>
               </div>

@@ -6,9 +6,7 @@ A web based monitoring dashboard displaying energy usage data and statistics for
 
 Written in Node.js + Express, and fully responsive so works well on mobile devices.
 
-<p align="center">
-  <img alt="Screenshot" src="https://jamesbarnett.io/files/tplink-monitor/screenshots/em-res.png">
-</p>
+!["Screenshot"](samplescreen.png?raw=true)
 
 # Features
 - Automatically scans for TP-Link smart plug devices on your local network on server start.
@@ -77,13 +75,7 @@ A note for Windows users: There seems to be an issue with the UDP broadcast the 
 
 If you hit this issue you can try disabling the VirtualBox adapter in `Control Panel > Network and Internet > Network Connections` and see if that solves the problem.
 
-# TODOs
-- [x] Show historical data
-- [x] Build dists
-- [x] Docker image
-- [x] Support switching between multiple plugs
-- [x] Switch to websockets
-- [x] Configurable realtime usage logging
-- [ ] Show cumulative energy usage form all devices
-- [ ] Rescan for devices on the fly
-- [ ] Add daily cost metrics
+# My tweaks in this fork
+- kWh
+- "Last" shows kWh for last major charging session to capture overnight charge of EV
+- totals for last 30 days and last 12 months
